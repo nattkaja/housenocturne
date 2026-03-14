@@ -305,7 +305,7 @@ code {
 }
 
 .header__logo img {
-  height: 48px;
+  height: 64px;
   width: auto;
 }
 
@@ -348,8 +348,8 @@ code {
 }
 
 .hero__logo {
-  max-width: 600px;
-  width: 90%;
+  max-width: 800px;
+  width: 95%;
   height: auto;
   margin-bottom: var(--space-xl);
   position: relative;
