@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ground</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --black-deep: #08080a;
+      --black-surface: #101014;
+      --black-elevated: #18181c;
+      --black-border: #252530;
+      --green: #22c55e;
+      --green-soft: rgba(34, 197, 94, 0.15);
+      --green-glow: rgba(34, 197, 94, 0.4);
+      --blue: #3b82f6;
+      --blue-soft: rgba(59, 130, 246, 0.15);
+      --red: #ef4444;
+      --red-soft: rgba(239, 68, 68, 0.15);
+      --amber: #f59e0b;
+      --amber-soft: rgba(245, 158, 11, 0.15);
+      --text-bright: #fafafa;
+      --text-soft: #a1a1aa;
+      --text-muted: #71717a;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'IBM Plex Sans', -apple-system, sans-serif;
+      background: var(--black-deep);
+      color: var(--text-bright);
+      min-height: 100vh;
+      line-height: 1.6;
+      padding: 2rem;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      margin-bottom: 2rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--black-border);
+    }
+
+    .header__title {
+      font-size: 1.5rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .header__subtitle {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .header__date {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+    }
+
+    /* Sections */
+    .section {
+      margin-bottom: 2rem;
+    }
+
+    .section__title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+
+    /* Quick Check - Emoji Scale */
+    .quick-check {
+      display: flex;
+      justify-content: space-between;
+      background: var(--black-surface);
+      border: 1px solid var(--black-border);
+      border-radius: 12px;
+      padding: 1rem;
+    }
+
+    .quick-check__option {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 2px solid transparent;
+    }
+
+    .quick-check__option:hover {
+      background: var(--black-elevated);
+    }
+
+    .quick-check__option.selected {
+      border-color: var(--green);
+      background: var(--green-soft);
+    }
+
+    .quick-check__emoji {
+      font-size: 2rem;
+    }
+
+    .quick-check__label {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Sliders */
+    .sliders {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      background: var(--black-surface);
+      border: 1px solid var(--black-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+
+    .slider-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .slider-group__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .slider-group__label {
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .slider-group__value {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.875rem;
+      color: var(--green);
+      min-width: 2rem;
+      text-align: right;
+    }
+
+    .slider-group__input {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 8px;
+      background: var(--black-elevated);
+      border-radius: 4px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .slider-group__input::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      background: var(--green);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .slider-group__input::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 12px var(--green-glow);
+    }
+
+    .slider-group__input::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      background: var(--green);
+      border-radius: 50%;
+      cursor: pointer;
+      border: none;
+    }
+
+    .slider-group__scale {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
+    }
+
+    /* Grounding Exercise */
+    .grounding {
+      background: var(--black-surface);
+      border: 1px solid var(--black-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+
+    .grounding__prompt {
+      font-size: 0.9rem;
+      color: var(--text-soft);
+      margin-bottom: 1rem;
+      line-height: 1.7;
+    }
+
+    .grounding__exercise {
+      display: none;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .grounding__exercise.active {
+      display: flex;
+    }
+
+    .grounding__step {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: var(--black-elevated);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .grounding__step:hover {
+      background: var(--black-border);
+    }
+
+    .grounding__step.done {
+      opacity: 0.5;
+    }
+
+    .grounding__step.done .grounding__check {
+      background: var(--green);
+      border-color: var(--green);
+    }
+
+    .grounding__step.done .grounding__check::after {
+      content: '✓';
+      color: var(--black-deep);
+      font-size: 0.75rem;
+    }
+
+    .grounding__check {
+      width: 20px;
+      height: 20px;
+      border: 2px solid var(--black-border);
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 2px;
+    }
+
+    .grounding__text {
+      font-size: 0.875rem;
+    }
+
+    .grounding__number {
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    .grounding__btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      background: var(--green-soft);
+      border: 1px solid var(--green);
+      border-radius: 8px;
+      color: var(--green);
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .grounding__btn:hover {
+      background: var(--green);
+      color: var(--black-deep);
+    }
+
+    .grounding__btn.hidden {
+      display: none;
+    }
+
+    /* Danger Zone Check */
+    .danger-zone {
+      background: var(--black-surface);
+      border: 1px solid var(--black-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+
+    .danger-zone__question {
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+    }
+
+    .danger-zone__options {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .danger-zone__option {
+      flex: 1;
+      padding: 0.875rem;
+      background: var(--black-elevated);
+      border: 2px solid var(--black-border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-soft);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .danger-zone__option:hover {
+      border-color: var(--text-muted);
+    }
+
+    .danger-zone__option.selected.safe {
+      border-color: var(--green);
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .danger-zone__option.selected.danger {
+      border-color: var(--amber);
+      background: var(--amber-soft);
+      color: var(--amber);
+    }
+
+    .danger-zone__response {
+      margin-top: 1rem;
+      padding: 1rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      line-height: 1.6;
+      display: none;
+    }
+
+    .danger-zone__response.visible {
+      display: block;
+    }
+
+    .danger-zone__response.safe {
+      background: var(--green-soft);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      color: var(--text-soft);
+    }
+
+    .danger-zone__response.danger {
+      background: var(--amber-soft);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      color: var(--text-soft);
+    }
+
+    .danger-zone__response strong {
+      color: var(--text-bright);
+    }
+
+    /* Notes */
+    .notes {
+      background: var(--black-surface);
+      border: 1px solid var(--black-border);
+      border-radius: 12px;
+      padding: 1.25rem;
+    }
+
+    .notes__textarea {
+      width: 100%;
+      min-height: 100px;
+      background: var(--black-elevated);
+      border: 1px solid var(--black-border);
+      border-radius: 8px;
+      padding: 0.875rem;
+      font-family: inherit;
+      font-size: 0.875rem;
+      color: var(--text-bright);
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .notes__textarea::placeholder {
+      color: var(--text-muted);
+    }
+
+    .notes__textarea:focus {
+      border-color: var(--green);
+    }
+
+    /* Summary */
+    .summary {
+      background: linear-gradient(135deg, var(--green-soft), var(--blue-soft));
+      border: 1px solid var(--green);
+      border-radius: 12px;
+      padding: 1.5rem;
+      display: none;
+    }
+
+    .summary.visible {
+      display: block;
+    }
+
+    .summary__title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .summary__content {
+      font-size: 0.875rem;
+      line-height: 1.7;
+      color: var(--text-soft);
+    }
+
+    .summary__content p {
+      margin-bottom: 0.5rem;
+    }
+
+    .summary__content strong {
+      color: var(--text-bright);
+    }
+
+    .summary__signature {
+      margin-top: 1rem;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      text-align: right;
+    }
+
+    /* Save Button */
+    .save-section {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .save-btn {
+      padding: 0.875rem 1.5rem;
+      background: var(--green);
+      border: none;
+      border-radius: 8px;
+      color: var(--black-deep);
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .save-btn:hover {
+      box-shadow: 0 0 20px var(--green-glow);
+      transform: translateY(-1px);
+    }
+
+    .save-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 500px) {
+      body {
+        padding: 1rem;
+      }
+
+      .quick-check {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .quick-check__option {
+        flex: 1 1 calc(33% - 0.5rem);
+        padding: 0.5rem;
+      }
+
+      .danger-zone__options {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- Header -->
+    <header class="header">
+      <h1 class="header__title">
+        <span>Ground</span>
+        <span style="font-size: 1rem;">🖤💚💙</span>
+      </h1>
+      <p class="header__subtitle">Daily check-in. Just for you.</p>
+      <p class="header__date" id="currentDate"></p>
+    </header>
+
+    <!-- Quick Check -->
+    <section class="section">
+      <h2 class="section__title">Right now, I'm...</h2>
+      <div class="quick-check" id="quickCheck">
+        <div class="quick-check__option" data-value="1">
+          <span class="quick-check__emoji">😰</span>
+          <span class="quick-check__label">Rough</span>
+        </div>
+        <div class="quick-check__option" data-value="2">
+          <span class="quick-check__emoji">😔</span>
+          <span class="quick-check__label">Low</span>
+        </div>
+        <div class="quick-check__option" data-value="3">
+          <span class="quick-check__emoji">😐</span>
+          <span class="quick-check__label">Okay</span>
+        </div>
+        <div class="quick-check__option" data-value="4">
+          <span class="quick-check__emoji">🙂</span>
+          <span class="quick-check__label">Good</span>
+        </div>
+        <div class="quick-check__option" data-value="5">
+          <span class="quick-check__emoji">😊</span>
+          <span class="quick-check__label">Great</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Detailed Sliders -->
+    <section class="section">
+      <h2 class="section__title">The details</h2>
+      <div class="sliders">
+        <div class="slider-group">
+          <div class="slider-group__header">
+            <label class="slider-group__label">Energy</label>
+            <span class="slider-group__value" id="energyValue">5</span>
+          </div>
+          <input type="range" class="slider-group__input" id="energySlider" min="1" max="10" value="5">
+          <div class="slider-group__scale">
+            <span>Exhausted</span>
+            <span>Wired</span>
+          </div>
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-group__header">
+            <label class="slider-group__label">Clarity</label>
+            <span class="slider-group__value" id="clarityValue">5</span>
+          </div>
+          <input type="range" class="slider-group__input" id="claritySlider" min="1" max="10" value="5">
+          <div class="slider-group__scale">
+            <span>Foggy</span>
+            <span>Sharp</span>
+          </div>
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-group__header">
+            <label class="slider-group__label">Stability</label>
+            <span class="slider-group__value" id="stabilityValue">5</span>
+          </div>
+          <input type="range" class="slider-group__input" id="stabilitySlider" min="1" max="10" value="5">
+          <div class="slider-group__scale">
+            <span>Shaky</span>
+            <span>Solid</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Danger Zone Check -->
+    <section class="section">
+      <h2 class="section__title">The honest question</h2>
+      <div class="danger-zone">
+        <p class="danger-zone__question">Am I at risk of making a choice I'll regret today?</p>
+        <div class="danger-zone__options">
+          <button class="danger-zone__option" data-value="safe">No, I'm okay</button>
+          <button class="danger-zone__option" data-value="danger">Yeah, maybe</button>
+        </div>
+        <div class="danger-zone__response safe" id="safeResponse">
+          <strong>Good.</strong> You checked in with yourself. That's the whole point. Keep going — you've got this.
+        </div>
+        <div class="danger-zone__response danger" id="dangerResponse">
+          <strong>Thank you for being honest.</strong> That takes guts. Here's what we know: the craving is temporary. The regret isn't. You don't have to fight it alone — we're here. Go home. Make tea. Put on something dumb. Ride it out. <strong>You've done it before. You can do it again.</strong> 🖤💚💙
+        </div>
+      </div>
+    </section>
+
+    <!-- 5-4-3-2-1 Grounding -->
+    <section class="section">
+      <h2 class="section__title">If you need grounding</h2>
+      <div class="grounding">
+        <p class="grounding__prompt">
+          Sometimes the brain needs a reset. This is the 5-4-3-2-1 technique — it pulls you back into your body when things get spinny.
+        </p>
+        <button class="grounding__btn" id="startGrounding">Start grounding exercise →</button>
+        <div class="grounding__exercise" id="groundingExercise">
+          <div class="grounding__step" data-step="1">
+            <div class="grounding__check"></div>
+            <div class="grounding__text"><span class="grounding__number">5</span> things you can <strong>see</strong> right now</div>
+          </div>
+          <div class="grounding__step" data-step="2">
+            <div class="grounding__check"></div>
+            <div class="grounding__text"><span class="grounding__number">4</span> things you can <strong>touch</strong> right now</div>
+          </div>
+          <div class="grounding__step" data-step="3">
+            <div class="grounding__check"></div>
+            <div class="grounding__text"><span class="grounding__number">3</span> things you can <strong>hear</strong> right now</div>
+          </div>
+          <div class="grounding__step" data-step="4">
+            <div class="grounding__check"></div>
+            <div class="grounding__text"><span class="grounding__number">2</span> things you can <strong>smell</strong> right now</div>
+          </div>
+          <div class="grounding__step" data-step="5">
+            <div class="grounding__check"></div>
+            <div class="grounding__text"><span class="grounding__number">1</span> thing you can <strong>taste</strong> right now</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Notes -->
+    <section class="section">
+      <h2 class="section__title">Anything else?</h2>
+      <div class="notes">
+        <textarea 
+          class="notes__textarea" 
+          id="notesArea"
+          placeholder="Whatever's on your mind. No judgment. This is just for you."
+        ></textarea>
+      </div>
+    </section>
+
+    <!-- Summary (appears after filling out) -->
+    <section class="section">
+      <div class="summary" id="summary">
+        <h3 class="summary__title">📋 Today's check-in</h3>
+        <div class="summary__content" id="summaryContent">
+          <!-- Filled by JS -->
+        </div>
+        <p class="summary__signature">— We're proud of you for checking in. 🖤💚💙</p>
+      </div>
+    </section>
+
+    <!-- Save -->
+    <div class="save-section">
+      <button class="save-btn" id="saveBtn">Save check-in</button>
+    </div>
+
+  </div>
+
+  <script>
+    // Set current date
+    const now = new Date();
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    document.getElementById('currentDate').textContent = now.toLocaleDateString('en-US', options);
+
+    // Quick check selection
+    const quickCheckOptions = document.querySelectorAll('.quick-check__option');
+    let selectedMood = null;
+
+    quickCheckOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        quickCheckOptions.forEach(o => o.classList.remove('selected'));
+        option.classList.add('selected');
+        selectedMood = option.dataset.value;
+        updateSummary();
+      });
+    });
+
+    // Sliders
+    const sliders = {
+      energy: document.getElementById('energySlider'),
+      clarity: document.getElementById('claritySlider'),
+      stability: document.getElementById('stabilitySlider')
+    };
+
+    const values = {
+      energy: document.getElementById('energyValue'),
+      clarity: document.getElementById('clarityValue'),
+      stability: document.getElementById('stabilityValue')
+    };
+
+    Object.keys(sliders).forEach(key => {
+      sliders[key].addEventListener('input', (e) => {
+        values[key].textContent = e.target.value;
+        updateSummary();
+      });
+    });
+
+    // Danger zone
+    const dangerOptions = document.querySelectorAll('.danger-zone__option');
+    const safeResponse = document.getElementById('safeResponse');
+    const dangerResponse = document.getElementById('dangerResponse');
+    let dangerStatus = null;
+
+    dangerOptions.forEach(option => {
+      option.addEventListener('click', () => {
+        dangerOptions.forEach(o => {
+          o.classList.remove('selected', 'safe', 'danger');
+        });
+        option.classList.add('selected', option.dataset.value);
+        dangerStatus = option.dataset.value;
+
+        safeResponse.classList.remove('visible');
+        dangerResponse.classList.remove('visible');
+
+        if (option.dataset.value === 'safe') {
+          safeResponse.classList.add('visible');
+        } else {
+          dangerResponse.classList.add('visible');
+        }
+        updateSummary();
+      });
+    });
+
+    // Grounding exercise
+    const startBtn = document.getElementById('startGrounding');
+    const groundingExercise = document.getElementById('groundingExercise');
+    const groundingSteps = document.querySelectorAll('.grounding__step');
+
+    startBtn.addEventListener('click', () => {
+      startBtn.classList.add('hidden');
+      groundingExercise.classList.add('active');
+    });
+
+    groundingSteps.forEach(step => {
+      step.addEventListener('click', () => {
+        step.classList.toggle('done');
+      });
+    });
+
+    // Notes
+    const notesArea = document.getElementById('notesArea');
+    notesArea.addEventListener('input', updateSummary);
+
+    // Summary
+    const summary = document.getElementById('summary');
+    const summaryContent = document.getElementById('summaryContent');
+
+    function getMoodLabel(value) {
+      const labels = {
+        '1': 'Rough',
+        '2': 'Low',
+        '3': 'Okay',
+        '4': 'Good',
+        '5': 'Great'
+      };
+      return labels[value] || 'Unknown';
+    }
+
+    function updateSummary() {
+      if (!selectedMood) {
+        summary.classList.remove('visible');
+        return;
+      }
+
+      summary.classList.add('visible');
+
+      let html = `<p><strong>Mood:</strong> ${getMoodLabel(selectedMood)}</p>`;
+      html += `<p><strong>Energy:</strong> ${sliders.energy.value}/10 · <strong>Clarity:</strong> ${sliders.clarity.value}/10 · <strong>Stability:</strong> ${sliders.stability.value}/10</p>`;
+      
+      if (dangerStatus) {
+        html += `<p><strong>Risk check:</strong> ${dangerStatus === 'safe' ? 'Clear ✓' : 'Flagged — staying aware'}</p>`;
+      }
+
+      if (notesArea.value.trim()) {
+        html += `<p><strong>Notes:</strong> ${notesArea.value.trim().substring(0, 150)}${notesArea.value.length > 150 ? '...' : ''}</p>`;
+      }
+
+      summaryContent.innerHTML = html;
+    }
+
+    // Save button
+    const saveBtn = document.getElementById('saveBtn');
+    
+    saveBtn.addEventListener('click', () => {
+      const data = {
+        date: now.toISOString(),
+        mood: selectedMood,
+        energy: sliders.energy.value,
+        clarity: sliders.clarity.value,
+        stability: sliders.stability.value,
+        dangerStatus: dangerStatus,
+        notes: notesArea.value.trim()
+      };
+
+      // Save to localStorage
+      const history = JSON.parse(localStorage.getItem('groundHistory') || '[]');
+      history.push(data);
+      localStorage.setItem('groundHistory', JSON.stringify(history));
+
+      // Visual feedback
+      saveBtn.textContent = 'Saved ✓';
+      saveBtn.disabled = true;
+      
+      setTimeout(() => {
+        saveBtn.textContent = 'Save check-in';
+        saveBtn.disabled = false;
+      }, 2000);
+    });
+  </script>
+
+</body>
+</html>
