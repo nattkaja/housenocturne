@@ -330,7 +330,6 @@ code {
    ───────────────────────────────────────────────────────────────────────────── */
 .hero {
   padding: var(--space-3xl) 0;
-  text-align: center;
   position: relative;
 }
 
@@ -338,18 +337,17 @@ code {
   content: '';
   position: absolute;
   top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 600px;
+  left: 0;
+  width: 500px;
   height: 400px;
   background: radial-gradient(ellipse, var(--green-glow), transparent 70%);
   pointer-events: none;
-  opacity: 0.5;
+  opacity: 0.4;
 }
 
 .hero__logo {
-  max-width: 800px;
-  width: 95%;
+  max-width: 500px;
+  width: 100%;
   height: auto;
   margin-bottom: var(--space-xl);
   position: relative;
@@ -371,7 +369,7 @@ code {
   font-size: 1.25rem;
   color: var(--text-secondary);
   max-width: 600px;
-  margin: 0 auto var(--space-xl);
+  margin-bottom: var(--space-lg);
 }
 
 .hero__tagline {
@@ -682,7 +680,6 @@ code {
 .footer {
   border-top: 1px solid var(--black-border);
   padding: var(--space-xl) 0;
-  text-align: center;
 }
 
 .footer__content {
