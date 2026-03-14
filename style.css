@@ -282,7 +282,7 @@ code {
    Header
    ───────────────────────────────────────────────────────────────────────────── */
 .header {
-  padding: var(--space-lg) 0;
+  padding: var(--space-sm) 0;
   border-bottom: 1px solid var(--black-border);
   position: sticky;
   top: 0;
