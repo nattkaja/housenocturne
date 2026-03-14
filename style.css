@@ -1,6 +1,7 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   HOUSE NOCTURNE LABS — Style System
+   HOUSE NOCTURNE LABS — Style System v2
    Dark theme. Sleek. Black, green, blue accents.
+   Now with: syntax highlighting, copy buttons, TOC, progress bar
    ═══════════════════════════════════════════════════════════════════════════ */
 
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
@@ -29,6 +30,16 @@
   --text-secondary: #a1a1aa;
   --text-muted: #71717a;
   
+  /* Syntax highlighting */
+  --syntax-keyword: #c678dd;
+  --syntax-string: #98c379;
+  --syntax-comment: #5c6370;
+  --syntax-function: #61afef;
+  --syntax-number: #d19a66;
+  --syntax-operator: #56b6c2;
+  --syntax-variable: #e06c75;
+  --syntax-property: #e5c07b;
+  
   /* Typography */
   --font-display: 'Space Grotesk', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
@@ -46,6 +57,9 @@
   --transition-fast: 150ms ease;
   --transition-base: 250ms ease;
   --transition-slow: 400ms ease;
+  
+  /* Layout */
+  --toc-width: 220px;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -60,6 +74,7 @@
 html {
   font-size: 16px;
   scroll-behavior: smooth;
+  scroll-padding-top: 100px;
 }
 
 body {
@@ -86,6 +101,20 @@ body::before {
   background-size: 50px 50px;
   pointer-events: none;
   z-index: -1;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Progress Bar
+   ───────────────────────────────────────────────────────────────────────────── */
+.progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--green-primary), var(--blue-primary));
+  width: 0%;
+  z-index: 1000;
+  transition: width 100ms ease-out;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -128,6 +157,9 @@ a:hover {
   color: var(--blue-primary);
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   Code & Syntax Highlighting
+   ───────────────────────────────────────────────────────────────────────────── */
 code, pre {
   font-family: var(--font-mono);
 }
@@ -140,21 +172,97 @@ code {
   color: var(--green-primary);
 }
 
-pre {
+/* Code block wrapper */
+.code-block {
+  position: relative;
+  margin: var(--space-lg) 0;
+}
+
+.code-block pre {
   background: var(--black-surface);
   border: 1px solid var(--black-border);
   border-radius: 8px;
   padding: var(--space-lg);
+  padding-top: calc(var(--space-lg) + 8px);
   overflow-x: auto;
-  margin: var(--space-lg) 0;
+  margin: 0;
 }
 
-pre code {
+.code-block pre code {
   background: none;
   padding: 0;
   font-size: 0.875rem;
   color: var(--text-primary);
+  display: block;
 }
+
+/* Copy button */
+.copy-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--black-elevated);
+  border: 1px solid var(--black-border);
+  color: var(--text-muted);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-family: var(--font-display);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  z-index: 10;
+}
+
+.copy-btn:hover {
+  background: var(--black-border);
+  color: var(--text-primary);
+  border-color: var(--green-dim);
+}
+
+.copy-btn.copied {
+  background: var(--green-dim);
+  color: white;
+  border-color: var(--green-primary);
+}
+
+/* Language label */
+.code-lang {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  font-size: 0.7rem;
+  font-family: var(--font-mono);
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Syntax highlighting classes */
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-built_in,
+.hljs-name { color: var(--syntax-keyword); }
+
+.hljs-string,
+.hljs-attr { color: var(--syntax-string); }
+
+.hljs-comment,
+.hljs-quote { color: var(--syntax-comment); font-style: italic; }
+
+.hljs-function,
+.hljs-title { color: var(--syntax-function); }
+
+.hljs-number,
+.hljs-literal { color: var(--syntax-number); }
+
+.hljs-operator,
+.hljs-punctuation { color: var(--syntax-operator); }
+
+.hljs-variable,
+.hljs-template-variable { color: var(--syntax-variable); }
+
+.hljs-property,
+.hljs-attribute { color: var(--syntax-property); }
 
 /* ─────────────────────────────────────────────────────────────────────────────
    Layout
@@ -174,11 +282,11 @@ pre code {
    Header
    ───────────────────────────────────────────────────────────────────────────── */
 .header {
-  padding: var(--space-lg) 0;
+  padding: var(--space-md) 0;
   border-bottom: 1px solid var(--black-border);
   position: sticky;
   top: 0;
-  background: rgba(10, 10, 11, 0.9);
+  background: rgba(10, 10, 11, 0.95);
   backdrop-filter: blur(12px);
   z-index: 100;
 }
@@ -193,21 +301,12 @@ pre code {
   display: flex;
   align-items: center;
   gap: var(--space-sm);
-  font-weight: 700;
-  font-size: 1.125rem;
-  color: var(--text-primary);
   text-decoration: none;
 }
 
-.header__logo-icon {
-  width: 32px;
-  height: 32px;
-  background: linear-gradient(135deg, var(--green-primary), var(--blue-primary));
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
+.header__logo img {
+  height: 40px;
+  width: auto;
 }
 
 .header__nav {
@@ -246,6 +345,13 @@ pre code {
   background: radial-gradient(ellipse, var(--green-glow), transparent 70%);
   pointer-events: none;
   opacity: 0.5;
+}
+
+.hero__logo {
+  width: 200px;
+  height: auto;
+  margin-bottom: var(--space-xl);
+  position: relative;
 }
 
 .hero__title {
@@ -356,12 +462,83 @@ pre code {
 .card--blue::before { background: var(--blue-primary); }
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Tutorial Page
+   Tutorial Page Layout with TOC
    ───────────────────────────────────────────────────────────────────────────── */
+.tutorial-layout {
+  display: flex;
+  gap: var(--space-2xl);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-lg);
+}
+
 .tutorial {
+  flex: 1;
+  min-width: 0;
   padding: var(--space-2xl) 0 var(--space-3xl);
 }
 
+/* Table of Contents */
+.toc {
+  width: var(--toc-width);
+  flex-shrink: 0;
+  position: sticky;
+  top: 100px;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  padding: var(--space-xl) 0;
+  display: none;
+}
+
+@media (min-width: 1100px) {
+  .toc {
+    display: block;
+  }
+}
+
+.toc__title {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  margin-bottom: var(--space-md);
+}
+
+.toc__list {
+  list-style: none;
+}
+
+.toc__item {
+  margin-bottom: var(--space-xs);
+}
+
+.toc__link {
+  display: block;
+  padding: var(--space-xs) 0;
+  padding-left: var(--space-md);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  border-left: 2px solid transparent;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.toc__link:hover {
+  color: var(--text-secondary);
+}
+
+.toc__link.active {
+  color: var(--green-primary);
+  border-left-color: var(--green-primary);
+}
+
+.toc__link--h3 {
+  padding-left: calc(var(--space-md) + var(--space-sm));
+  font-size: 0.8rem;
+}
+
+/* Tutorial content */
 .tutorial__header {
   margin-bottom: var(--space-2xl);
   padding-bottom: var(--space-xl);
@@ -381,6 +558,7 @@ pre code {
   margin-top: var(--space-2xl);
   padding-top: var(--space-xl);
   border-top: 1px solid var(--black-border);
+  scroll-margin-top: 100px;
 }
 
 .tutorial__content h2:first-child {
@@ -392,6 +570,7 @@ pre code {
 .tutorial__content h3 {
   margin-top: var(--space-xl);
   color: var(--green-primary);
+  scroll-margin-top: 100px;
 }
 
 .tutorial__content p {
@@ -546,5 +725,9 @@ pre code {
   
   .cards {
     grid-template-columns: 1fr;
+  }
+  
+  .tutorial-layout {
+    display: block;
   }
 }

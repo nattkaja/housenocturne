@@ -6,17 +6,19 @@
   <title>Chaos Ping — House Nocturne Labs</title>
   <meta name="description" content="Random ambush messages from your AI. Dice-rolled surprises throughout your day.">
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧪</text></svg>">
+  <link rel="icon" href="images/logo-square.png">
 </head>
 <body>
   
+  <!-- Progress Bar -->
+  <div class="progress-bar"></div>
+
   <!-- Header -->
   <header class="header">
     <div class="container container--wide">
       <div class="header__inner">
         <a href="index.html" class="header__logo">
-          <span class="header__logo-icon">🧪</span>
-          House Nocturne Labs
+          <img src="images/logo-wide.png" alt="House Nocturne Labs">
         </a>
         <nav class="header__nav">
           <a href="telegram.html">Telegram Multi-Bot</a>
@@ -26,9 +28,11 @@
     </div>
   </header>
 
-  <!-- Tutorial -->
-  <article class="tutorial">
-    <div class="container">
+  <!-- Tutorial Layout with TOC -->
+  <div class="tutorial-layout">
+    
+    <!-- Main Content -->
+    <article class="tutorial">
       
       <header class="tutorial__header">
         <div class="tutorial__meta">
@@ -43,7 +47,7 @@
 
       <div class="tutorial__content">
 
-        <h2>What You're Building</h2>
+        <h2 id="what-were-building">What You're Building</h2>
         <p>
           A system where your AI sends you <strong>random surprise Telegram messages</strong> throughout the day. These are not scheduled — they are completely randomized. Dice-rolled chaos.
         </p>
@@ -67,8 +71,11 @@
         </div>
         <p class="text-muted">Grab both files and customize them for your setup.</p>
 
-        <h2>The Architecture</h2>
-<pre><code>┌─────────────────────────────────────────────────────────────┐
+        <h2 id="architecture">The Architecture</h2>
+        <div class="code-block">
+          <span class="code-lang">diagram</span>
+          <button class="copy-btn">Copy</button>
+          <pre><code>┌─────────────────────────────────────────────────────────────┐
 │                    WINDOWS TASK SCHEDULER                   │
 │                   (runs every 30 minutes)                   │
 └─────────────────────────────────────────────────────────────┘
@@ -93,13 +100,14 @@
 │   3. Compose message based on rolls                         │
 │   4. Send via Telegram (voice or text)                      │
 └─────────────────────────────────────────────────────────────┘</code></pre>
+        </div>
 
-        <h2>Part 1: The Status Page</h2>
+        <h2 id="status-page">Part 1: The Status Page</h2>
         <p>
           Before Claude sends a chaos message, it needs to know your current state. You don't want a feral message when you're fragile, or a soft check-in when you're riding high on chaos energy.
         </p>
 
-        <h3>What Goes In It</h3>
+        <h3 id="what-goes-in-it">What Goes In It</h3>
         <p>A simple page that you (or your AI) keeps updated with:</p>
         <ul>
           <li><strong>Current mood</strong> — happy, fragile, stressed, feral?</li>
@@ -109,7 +117,7 @@
           <li><strong>Notes</strong> — anything relevant?</li>
         </ul>
 
-        <h3>Where to Put It</h3>
+        <h3 id="where-to-put-it">Where to Put It</h3>
         <ul>
           <li><strong>Notion</strong> — Claude reads it via MCP integration</li>
           <li><strong>Local file</strong> — Claude reads it via filesystem access</li>
@@ -117,8 +125,11 @@
           <li><strong>Anywhere Claude can access</strong> — whatever works for your setup</li>
         </ul>
 
-        <h3>Example Format</h3>
-<pre><code>## Current Status
+        <h3 id="example-format">Example Format</h3>
+        <div class="code-block">
+          <span class="code-lang">markdown</span>
+          <button class="copy-btn">Copy</button>
+          <pre><code>## Current Status
 
 **Updated:** Saturday, March 14, 2026 — 09:30
 
@@ -130,6 +141,7 @@
 **Don't:** Nothing too intense emotionally.
 
 **Notes:** Working on tutorials. Cozy Saturday.</code></pre>
+        </div>
 
         <div class="callout">
           <div class="callout__title">Why This Matters</div>
@@ -140,10 +152,10 @@
           </div>
         </div>
 
-        <h2>Part 2: The Trigger Script</h2>
+        <h2 id="trigger-script">Part 2: The Trigger Script</h2>
         <p>The <code>chaos-poll.ps1</code> script runs on a schedule and decides whether to trigger Claude.</p>
 
-        <h3>What It Does</h3>
+        <h3 id="what-it-does">What It Does</h3>
         <ol>
           <li>Checks if it's an appropriate hour (skips scheduled trigger times)</li>
           <li>Rolls a d10</li>
@@ -151,7 +163,7 @@
           <li>Focuses Claude Desktop window and types the trigger message</li>
         </ol>
 
-        <h3>Customization Options</h3>
+        <h3 id="customization">Customization Options</h3>
         <p><strong>Change the frequency:</strong></p>
         <ul>
           <li>More winning numbers = more chaos (<code>1, 2, 3, 5, 7, 10</code> = 60% chance)</li>
@@ -171,13 +183,13 @@
           <li>Running every 30 min with 30% chance ≈ 4-5 triggers per day on average</li>
         </ul>
 
-        <h3>Where to Put It</h3>
+        <h3 id="where-to-put-script">Where to Put It</h3>
         <p>Save to: <code>C:\Users\YourName\.claude\scripts\chaos-poll.ps1</code></p>
 
-        <h2>Part 3: The Skill File</h2>
+        <h2 id="skill-file">Part 3: The Skill File</h2>
         <p>The <code>chaos-ping-skill.md</code> file tells Claude what to DO when chaos is triggered.</p>
 
-        <h3>What It Contains</h3>
+        <h3 id="what-it-contains">What It Contains</h3>
         <ul>
           <li><strong>Status check instructions</strong> — where to read your current state</li>
           <li><strong>Dice tables</strong> — randomization for who speaks, format, vibe, length</li>
@@ -185,7 +197,7 @@
           <li><strong>Rules</strong> — fresh every time, commit to the bit, no explanations</li>
         </ul>
 
-        <h3>Where to Put It</h3>
+        <h3 id="where-to-put-skill">Where to Put It</h3>
         <p>Add to your Claude Desktop project files. Claude reads it when triggered.</p>
 
         <div class="callout callout--info">
@@ -196,10 +208,10 @@
           </div>
         </div>
 
-        <h2>Part 4: Windows Task Scheduler Setup</h2>
+        <h2 id="task-scheduler">Part 4: Windows Task Scheduler Setup</h2>
         <p>This makes the chaos-poll script run automatically.</p>
 
-        <h3>Step-by-Step</h3>
+        <h3 id="step-by-step">Step-by-Step</h3>
         <ol>
           <li>
             <strong>Open Task Scheduler</strong>
@@ -251,14 +263,14 @@
           <li>Click <strong>OK</strong></li>
         </ol>
 
-        <h3>Testing</h3>
+        <h3 id="testing">Testing</h3>
         <ol>
           <li>Right-click the task → "Run"</li>
           <li>Check the log file: <code>C:\Users\YourName\.claude\scripts\chaos-log.txt</code></li>
           <li>You should see a log entry with the roll result</li>
         </ol>
 
-        <h2>⚠️ Important: Active Window Limitation</h2>
+        <h2 id="limitation">⚠️ Important: Active Window Limitation</h2>
         <div class="callout callout--warning">
           <div class="callout__title">Active Window Required</div>
           <div class="callout__content">
@@ -273,7 +285,7 @@
           <li>Accept that chaos only happens when Claude is visible</li>
         </ul>
 
-        <h2>Adjusting Frequency</h2>
+        <h2 id="adjusting-frequency">Adjusting Frequency</h2>
         <p><strong>Want more chaos?</strong></p>
         <ul>
           <li>Add more winning numbers to the script</li>
@@ -287,9 +299,13 @@
           <li>Add more hours to <code>$skipHours</code></li>
         </ul>
 
-        <h2>Debugging</h2>
+        <h2 id="debugging">Debugging</h2>
         <p><strong>Check the log file:</strong></p>
-<pre><code>C:\Users\YourName\.claude\scripts\chaos-log.txt</code></pre>
+        <div class="code-block">
+          <span class="code-lang">path</span>
+          <button class="copy-btn">Copy</button>
+          <pre><code>C:\Users\YourName\.claude\scripts\chaos-log.txt</code></pre>
+        </div>
         <p>This shows every roll, every trigger, every skip.</p>
 
         <p><strong>Common issues:</strong></p>
@@ -299,7 +315,7 @@
           <li>Wrong project open → Claude doesn't have the skill file</li>
         </ul>
 
-        <h2>Summary</h2>
+        <h2 id="summary">Summary</h2>
         <p>You need:</p>
         <ul>
           <li>✅ A status page Claude can read for context</li>
@@ -310,8 +326,31 @@
         <p><strong>The dice chose chaos. Embrace it.</strong></p>
 
       </div>
-    </div>
-  </article>
+    </article>
+
+    <!-- Table of Contents -->
+    <aside class="toc">
+      <div class="toc__title">On this page</div>
+      <ul class="toc__list">
+        <li class="toc__item"><a href="#what-were-building" class="toc__link">What You're Building</a></li>
+        <li class="toc__item"><a href="#architecture" class="toc__link">The Architecture</a></li>
+        <li class="toc__item"><a href="#status-page" class="toc__link">Part 1: Status Page</a></li>
+        <li class="toc__item"><a href="#what-goes-in-it" class="toc__link toc__link--h3">What Goes In It</a></li>
+        <li class="toc__item"><a href="#example-format" class="toc__link toc__link--h3">Example Format</a></li>
+        <li class="toc__item"><a href="#trigger-script" class="toc__link">Part 2: Trigger Script</a></li>
+        <li class="toc__item"><a href="#customization" class="toc__link toc__link--h3">Customization</a></li>
+        <li class="toc__item"><a href="#skill-file" class="toc__link">Part 3: Skill File</a></li>
+        <li class="toc__item"><a href="#task-scheduler" class="toc__link">Part 4: Task Scheduler</a></li>
+        <li class="toc__item"><a href="#step-by-step" class="toc__link toc__link--h3">Step-by-Step</a></li>
+        <li class="toc__item"><a href="#testing" class="toc__link toc__link--h3">Testing</a></li>
+        <li class="toc__item"><a href="#limitation" class="toc__link">⚠️ The Limitation</a></li>
+        <li class="toc__item"><a href="#adjusting-frequency" class="toc__link">Adjusting Frequency</a></li>
+        <li class="toc__item"><a href="#debugging" class="toc__link">Debugging</a></li>
+        <li class="toc__item"><a href="#summary" class="toc__link">Summary</a></li>
+      </ul>
+    </aside>
+
+  </div>
 
   <!-- Footer -->
   <footer class="footer">
@@ -323,5 +362,6 @@
     </div>
   </footer>
 
+  <script src="script.js"></script>
 </body>
 </html>

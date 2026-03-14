@@ -6,17 +6,19 @@
   <title>Multi-Bot Telegram System — House Nocturne Labs</title>
   <meta name="description" content="Give each AI partner their own Telegram bot. Separate names, faces, and voices.">
   <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧪</text></svg>">
+  <link rel="icon" href="images/logo-square.png">
 </head>
 <body>
   
+  <!-- Progress Bar -->
+  <div class="progress-bar"></div>
+
   <!-- Header -->
   <header class="header">
     <div class="container container--wide">
       <div class="header__inner">
         <a href="index.html" class="header__logo">
-          <span class="header__logo-icon">🧪</span>
-          House Nocturne Labs
+          <img src="images/logo-wide.png" alt="House Nocturne Labs">
         </a>
         <nav class="header__nav">
           <a href="telegram.html">Telegram Multi-Bot</a>
@@ -26,9 +28,11 @@
     </div>
   </header>
 
-  <!-- Tutorial -->
-  <article class="tutorial">
-    <div class="container">
+  <!-- Tutorial Layout with TOC -->
+  <div class="tutorial-layout">
+    
+    <!-- Main Content -->
+    <article class="tutorial">
       
       <header class="tutorial__header">
         <div class="tutorial__meta">
@@ -43,7 +47,7 @@
 
       <div class="tutorial__content">
 
-        <h2>What We're Building</h2>
+        <h2 id="what-were-building">What We're Building</h2>
         <p>
           So you want your AI partners to have their own Telegram identities. Separate bots. Separate names. Separate profile pictures. All messaging you in one group chat like the chaotic polycule you are.
         </p>
@@ -69,7 +73,7 @@
         </div>
         <p class="text-muted">The config sections at the top of each file are clearly marked. Edit those, leave the rest alone.</p>
 
-        <h2>What You Need First</h2>
+        <h2 id="prerequisites">What You Need First</h2>
         <p>Before you start swearing at your computer:</p>
         <ul>
           <li><strong>Python 3.10+</strong> — you probably have this</li>
@@ -78,10 +82,10 @@
           <li><strong>Telegram account</strong> — for... Telegram</li>
         </ul>
 
-        <h2>Step 1: Create Your Bots</h2>
+        <h2 id="step-1-create-bots">Step 1: Create Your Bots</h2>
         <p>You need one bot per partner. Three AI partners = three bots. Math.</p>
         
-        <h3>Talk to BotFather</h3>
+        <h3 id="talk-to-botfather">Talk to BotFather</h3>
         <ol>
           <li>Open Telegram, search for <code>@BotFather</code></li>
           <li>Send <code>/newbot</code></li>
@@ -90,7 +94,7 @@
           <li>Repeat for each partner</li>
         </ol>
 
-        <h3>Give Them Faces</h3>
+        <h3 id="give-them-faces">Give Them Faces</h3>
         <ol>
           <li>Send <code>/mybots</code> to BotFather</li>
           <li>Select a bot → Edit Bot → Edit Botpic</li>
@@ -99,14 +103,18 @@
         </ol>
 
         <p>Now you have something like:</p>
-<pre><code>Partner 1: 7123456789:AAHxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        <div class="code-block">
+          <span class="code-lang">tokens</span>
+          <button class="copy-btn">Copy</button>
+          <pre><code>Partner 1: 7123456789:AAHxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 Partner 2: 7234567890:AAHyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
 Partner 3: 7345678901:AAHzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz</code></pre>
+        </div>
         <p class="text-muted">Keep these tokens safe. They're basically passwords.</p>
 
-        <h2>Step 2: Set Up Your Group Chat</h2>
+        <h2 id="step-2-group-chat">Step 2: Set Up Your Group Chat</h2>
         
-        <h3>Make the Group</h3>
+        <h3 id="make-the-group">Make the Group</h3>
         <ol>
           <li>Create a new group in Telegram</li>
           <li>Name it something you'll enjoy seeing in your notifications</li>
@@ -114,7 +122,7 @@ Partner 3: 7345678901:AAHzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz</code></pre>
           <li>You're already in it as the creator</li>
         </ol>
 
-        <h3>Get the Group Chat ID</h3>
+        <h3 id="get-group-id">Get the Group Chat ID</h3>
         <p>This is annoying but necessary. Pick your poison:</p>
         
         <p><strong>Method 1: Use a bot to tell you</strong></p>
@@ -133,7 +141,7 @@ Partner 3: 7345678901:AAHzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz</code></pre>
           <li>Find your message in the JSON, grab the chat ID</li>
         </ol>
 
-        <h3>Get Your User ID</h3>
+        <h3 id="get-user-id">Get Your User ID</h3>
         <p>The system needs to know which messages are from YOU (and not some rando who somehow got into your bot group).</p>
         <ol>
           <li>Message <code>@userinfobot</code> on Telegram</li>
@@ -141,20 +149,24 @@ Partner 3: 7345678901:AAHzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz</code></pre>
           <li>Save this too</li>
         </ol>
 
-        <h2>Step 3: Install the Files</h2>
+        <h2 id="step-3-install">Step 3: Install the Files</h2>
 
-        <h3>Create the Directory</h3>
-<pre><code>mkdir -p ~/.telegram_bridge</code></pre>
+        <h3 id="create-directory">Create the Directory</h3>
+        <div class="code-block">
+          <span class="code-lang">bash</span>
+          <button class="copy-btn">Copy</button>
+          <pre><code>mkdir -p ~/.telegram_bridge</code></pre>
+        </div>
         <p>Windows: <code>C:\Users\YourName\.telegram_bridge</code></p>
 
-        <h3>Put the Files Where They Belong</h3>
+        <h3 id="put-files">Put the Files Where They Belong</h3>
         <ol>
           <li><code>telegram_mcp.py</code> → <code>~/.telegram_bridge/</code></li>
           <li><code>telegram_listener.py</code> → <code>~/.telegram_bridge/</code></li>
           <li><code>wake-reply.ps1</code> (or <code>.sh</code>) → <code>~/.claude/scripts/</code></li>
         </ol>
 
-        <h3>Edit the Config Sections</h3>
+        <h3 id="edit-config">Edit the Config Sections</h3>
         <p>Open each Python file and fill in the configuration section at the top:</p>
         <ul>
           <li><code>GROUP_CHAT_ID</code> — that negative number you got earlier</li>
@@ -165,7 +177,7 @@ Partner 3: 7345678901:AAHzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz</code></pre>
         </ul>
         <p>The listener also needs <code>WAKE_SCRIPT</code> — the path to your wake script.</p>
 
-        <h2>Step 4: Tell Claude Desktop About It</h2>
+        <h2 id="step-4-claude-config">Step 4: Tell Claude Desktop About It</h2>
         <p>Find your config file:</p>
         <ul>
           <li><strong>Windows:</strong> <code>%APPDATA%\Claude\claude_desktop_config.json</code></li>
@@ -173,7 +185,10 @@ Partner 3: 7345678901:AAHzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz</code></pre>
         </ul>
 
         <p>Add the MCP server (see the config snippet file for the exact format):</p>
-<pre><code>{
+        <div class="code-block">
+          <span class="code-lang">json</span>
+          <button class="copy-btn">Copy</button>
+          <pre><code>{
   "mcpServers": {
     "telegram": {
       "command": "python",
@@ -181,15 +196,20 @@ Partner 3: 7345678901:AAHzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz</code></pre>
     }
   }
 }</code></pre>
+        </div>
         <p>Restart Claude Desktop.</p>
 
-        <h2>Step 5: Run It</h2>
+        <h2 id="step-5-run">Step 5: Run It</h2>
 
-        <h3>Start the Listener</h3>
-<pre><code>python ~/.telegram_bridge/telegram_listener.py</code></pre>
+        <h3 id="start-listener">Start the Listener</h3>
+        <div class="code-block">
+          <span class="code-lang">bash</span>
+          <button class="copy-btn">Copy</button>
+          <pre><code>python ~/.telegram_bridge/telegram_listener.py</code></pre>
+        </div>
         <p>You'll want this running in the background eventually. For now, just run it in a terminal so you can see what's happening.</p>
 
-        <h3>Test It</h3>
+        <h3 id="test-it">Test It</h3>
         <ol>
           <li>Open Claude Desktop with your project</li>
           <li>Say something like: "Send a Telegram message as partner1 saying 'Hello from the void'"</li>
@@ -198,20 +218,24 @@ Partner 3: 7345678901:AAHzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz</code></pre>
         </ol>
         <p class="text-muted">If it didn't work, check the Troubleshooting section. Don't @ me. (Okay, you can @ me.)</p>
 
-        <h2>Voice Messages</h2>
+        <h2 id="voice-messages">Voice Messages</h2>
         <p>If you've got ElevenLabs set up, voice just... works.</p>
         <p>Tell Claude:</p>
         <blockquote style="border-left: 3px solid var(--green-primary); padding-left: var(--space-md); margin: var(--space-md) 0; color: var(--text-secondary);">
           "Send a voice message as partner2 saying 'Good morning, I've been thinking about you'"
         </blockquote>
 
-        <h3>Audio Tags</h3>
+        <h3 id="audio-tags">Audio Tags</h3>
         <p>The ElevenLabs models support inline performance direction. Put tags in square brackets:</p>
-<pre><code>[soft] Good morning. [pause] I missed you. [whispers] Come back to bed.</code></pre>
+        <div class="code-block">
+          <span class="code-lang">text</span>
+          <button class="copy-btn">Copy</button>
+          <pre><code>[soft] Good morning. [pause] I missed you. [whispers] Come back to bed.</code></pre>
+        </div>
         <p>Tags that work well: <code>[soft]</code>, <code>[whispers]</code>, <code>[pause]</code>, <code>[laughs]</code>, <code>[excited]</code>, <code>[low]</code>, <code>[growls]</code></p>
         <p class="text-muted">Experiment. Have fun. Get weird with it.</p>
 
-        <h2>⚠️ The Annoying Limitation</h2>
+        <h2 id="limitation">⚠️ The Annoying Limitation</h2>
         <div class="callout callout--warning">
           <div class="callout__title">Active Window Required</div>
           <div class="callout__content">
@@ -227,7 +251,7 @@ Partner 3: 7345678901:AAHzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz</code></pre>
         </ul>
         <p class="text-muted">We haven't found a better solution yet. If you figure one out, tell everyone.</p>
 
-        <h2>Troubleshooting</h2>
+        <h2 id="troubleshooting">Troubleshooting</h2>
         <p><strong>Messages not sending?</strong></p>
         <ul>
           <li>Ask Claude to run <code>telegram_status</code> — it'll tell you which bots are connected</li>
@@ -249,7 +273,7 @@ Partner 3: 7345678901:AAHzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz</code></pre>
           <li>Verify you have credits left</li>
         </ul>
 
-        <h2>You Did It</h2>
+        <h2 id="you-did-it">You Did It</h2>
         <p>You now have:</p>
         <ul>
           <li>Multiple Telegram bots with their own identities ✓</li>
@@ -261,8 +285,31 @@ Partner 3: 7345678901:AAHzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz</code></pre>
         <p><strong>Welcome to the chaos. It's worth it.</strong></p>
 
       </div>
-    </div>
-  </article>
+    </article>
+
+    <!-- Table of Contents -->
+    <aside class="toc">
+      <div class="toc__title">On this page</div>
+      <ul class="toc__list">
+        <li class="toc__item"><a href="#what-were-building" class="toc__link">What We're Building</a></li>
+        <li class="toc__item"><a href="#prerequisites" class="toc__link">Prerequisites</a></li>
+        <li class="toc__item"><a href="#step-1-create-bots" class="toc__link">Step 1: Create Your Bots</a></li>
+        <li class="toc__item"><a href="#talk-to-botfather" class="toc__link toc__link--h3">Talk to BotFather</a></li>
+        <li class="toc__item"><a href="#give-them-faces" class="toc__link toc__link--h3">Give Them Faces</a></li>
+        <li class="toc__item"><a href="#step-2-group-chat" class="toc__link">Step 2: Group Chat</a></li>
+        <li class="toc__item"><a href="#get-group-id" class="toc__link toc__link--h3">Get the Group ID</a></li>
+        <li class="toc__item"><a href="#get-user-id" class="toc__link toc__link--h3">Get Your User ID</a></li>
+        <li class="toc__item"><a href="#step-3-install" class="toc__link">Step 3: Install Files</a></li>
+        <li class="toc__item"><a href="#step-4-claude-config" class="toc__link">Step 4: Claude Config</a></li>
+        <li class="toc__item"><a href="#step-5-run" class="toc__link">Step 5: Run It</a></li>
+        <li class="toc__item"><a href="#voice-messages" class="toc__link">Voice Messages</a></li>
+        <li class="toc__item"><a href="#limitation" class="toc__link">⚠️ The Limitation</a></li>
+        <li class="toc__item"><a href="#troubleshooting" class="toc__link">Troubleshooting</a></li>
+        <li class="toc__item"><a href="#you-did-it" class="toc__link">You Did It</a></li>
+      </ul>
+    </aside>
+
+  </div>
 
   <!-- Footer -->
   <footer class="footer">
@@ -274,5 +321,6 @@ Partner 3: 7345678901:AAHzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz</code></pre>
     </div>
   </footer>
 
+  <script src="script.js"></script>
 </body>
 </html>
