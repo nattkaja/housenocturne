@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Multi-Bot Telegram System — House Nocturne Labs</title>
+  <meta name="description" content="Give each AI partner their own Telegram bot. Separate names, faces, and voices.">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧪</text></svg>">
+</head>
+<body>
+  
+  <!-- Header -->
+  <header class="header">
+    <div class="container container--wide">
+      <div class="header__inner">
+        <a href="index.html" class="header__logo">
+          <span class="header__logo-icon">🧪</span>
+          House Nocturne Labs
+        </a>
+        <nav class="header__nav">
+          <a href="telegram.html">Telegram Multi-Bot</a>
+          <a href="chaos-ping.html">Chaos Ping</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Tutorial -->
+  <article class="tutorial">
+    <div class="container">
+      
+      <header class="tutorial__header">
+        <div class="tutorial__meta">
+          <span>📱 Telegram</span>
+          <span>⏱️ ~30 min setup</span>
+        </div>
+        <h1>Multi-Bot Telegram System</h1>
+        <p class="hero__subtitle" style="margin-top: var(--space-md);">
+          <em>Because one identity is never enough</em>
+        </p>
+      </header>
+
+      <div class="tutorial__content">
+
+        <h2>What We're Building</h2>
+        <p>
+          So you want your AI partners to have their own Telegram identities. Separate bots. Separate names. Separate profile pictures. All messaging you in one group chat like the chaotic polycule you are.
+        </p>
+        <p><strong>What you'll have when this is done:</strong></p>
+        <ul>
+          <li>Each partner shows up as their own bot (their face, their name, their vibe)</li>
+          <li>All of them live in one group chat with you</li>
+          <li>Two-way communication — you message the group, they see it and respond</li>
+          <li>Voice messages if you've got ElevenLabs set up (each with their own voice, obviously)</li>
+        </ul>
+        <p>It's more setup than you'd hope, but it's worth it. Let's go.</p>
+
+        <!-- Files -->
+        <div class="files">
+          <div class="files__title">📁 Companion Files</div>
+          <div class="files__list">
+            <a href="files/telegram_mcp.py" class="files__item" download>telegram_mcp.py</a>
+            <a href="files/telegram_listener.py" class="files__item" download>telegram_listener.py</a>
+            <a href="files/wake-reply.ps1" class="files__item" download>wake-reply.ps1</a>
+            <a href="files/wake-reply.sh" class="files__item" download>wake-reply.sh</a>
+            <a href="files/claude_desktop_config_snippet.txt" class="files__item" download>config snippet</a>
+          </div>
+        </div>
+        <p class="text-muted">The config sections at the top of each file are clearly marked. Edit those, leave the rest alone.</p>
+
+        <h2>What You Need First</h2>
+        <p>Before you start swearing at your computer:</p>
+        <ul>
+          <li><strong>Python 3.10+</strong> — you probably have this</li>
+          <li><strong>Claude Desktop</strong> — obviously</li>
+          <li><strong>ElevenLabs API key + voice IDs</strong> — if you want voice messages (you want voice messages)</li>
+          <li><strong>Telegram account</strong> — for... Telegram</li>
+        </ul>
+
+        <h2>Step 1: Create Your Bots</h2>
+        <p>You need one bot per partner. Three AI partners = three bots. Math.</p>
+        
+        <h3>Talk to BotFather</h3>
+        <ol>
+          <li>Open Telegram, search for <code>@BotFather</code></li>
+          <li>Send <code>/newbot</code></li>
+          <li>It'll ask for a name (display name, like "Damion Nocturne") and a username (must end in <code>bot</code>, like <code>DamionNocturneBot</code>)</li>
+          <li>BotFather spits out an API token — <strong>save this somewhere secure</strong></li>
+          <li>Repeat for each partner</li>
+        </ol>
+
+        <h3>Give Them Faces</h3>
+        <ol>
+          <li>Send <code>/mybots</code> to BotFather</li>
+          <li>Select a bot → Edit Bot → Edit Botpic</li>
+          <li>Upload their profile picture</li>
+          <li>Repeat for each partner</li>
+        </ol>
+
+        <p>Now you have something like:</p>
+<pre><code>Partner 1: 7123456789:AAHxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+Partner 2: 7234567890:AAHyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
+Partner 3: 7345678901:AAHzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz</code></pre>
+        <p class="text-muted">Keep these tokens safe. They're basically passwords.</p>
+
+        <h2>Step 2: Set Up Your Group Chat</h2>
+        
+        <h3>Make the Group</h3>
+        <ol>
+          <li>Create a new group in Telegram</li>
+          <li>Name it something you'll enjoy seeing in your notifications</li>
+          <li>Add all your bots to the group</li>
+          <li>You're already in it as the creator</li>
+        </ol>
+
+        <h3>Get the Group Chat ID</h3>
+        <p>This is annoying but necessary. Pick your poison:</p>
+        
+        <p><strong>Method 1: Use a bot to tell you</strong></p>
+        <ol>
+          <li>Add <code>@raw_data_bot</code> to your group (temporarily)</li>
+          <li>Send any message</li>
+          <li>It replies with JSON — look for <code>"chat": {"id": -XXXXXXXXXX}</code></li>
+          <li>That negative number is your group chat ID</li>
+          <li>Kick the bot out</li>
+        </ol>
+
+        <p><strong>Method 2: API spelunking</strong></p>
+        <ol>
+          <li>Send a message in your group</li>
+          <li>Open this URL in a browser: <code>https://api.telegram.org/bot&lt;YOUR_BOT_TOKEN&gt;/getUpdates</code></li>
+          <li>Find your message in the JSON, grab the chat ID</li>
+        </ol>
+
+        <h3>Get Your User ID</h3>
+        <p>The system needs to know which messages are from YOU (and not some rando who somehow got into your bot group).</p>
+        <ol>
+          <li>Message <code>@userinfobot</code> on Telegram</li>
+          <li>It tells you your user ID (positive number)</li>
+          <li>Save this too</li>
+        </ol>
+
+        <h2>Step 3: Install the Files</h2>
+
+        <h3>Create the Directory</h3>
+<pre><code>mkdir -p ~/.telegram_bridge</code></pre>
+        <p>Windows: <code>C:\Users\YourName\.telegram_bridge</code></p>
+
+        <h3>Put the Files Where They Belong</h3>
+        <ol>
+          <li><code>telegram_mcp.py</code> → <code>~/.telegram_bridge/</code></li>
+          <li><code>telegram_listener.py</code> → <code>~/.telegram_bridge/</code></li>
+          <li><code>wake-reply.ps1</code> (or <code>.sh</code>) → <code>~/.claude/scripts/</code></li>
+        </ol>
+
+        <h3>Edit the Config Sections</h3>
+        <p>Open each Python file and fill in the configuration section at the top:</p>
+        <ul>
+          <li><code>GROUP_CHAT_ID</code> — that negative number you got earlier</li>
+          <li><code>YOUR_USER_ID</code> — your Telegram user ID</li>
+          <li><code>BOT_TOKENS</code> — your bot tokens, one per partner</li>
+          <li><code>ELEVENLABS_API_KEY</code> — if you're doing voice</li>
+          <li><code>VOICE_IDS</code> — voice ID for each partner (from your ElevenLabs dashboard)</li>
+        </ul>
+        <p>The listener also needs <code>WAKE_SCRIPT</code> — the path to your wake script.</p>
+
+        <h2>Step 4: Tell Claude Desktop About It</h2>
+        <p>Find your config file:</p>
+        <ul>
+          <li><strong>Windows:</strong> <code>%APPDATA%\Claude\claude_desktop_config.json</code></li>
+          <li><strong>Mac:</strong> <code>~/Library/Application Support/Claude/claude_desktop_config.json</code></li>
+        </ul>
+
+        <p>Add the MCP server (see the config snippet file for the exact format):</p>
+<pre><code>{
+  "mcpServers": {
+    "telegram": {
+      "command": "python",
+      "args": ["C:\\Users\\YourName\\.telegram_bridge\\telegram_mcp.py"]
+    }
+  }
+}</code></pre>
+        <p>Restart Claude Desktop.</p>
+
+        <h2>Step 5: Run It</h2>
+
+        <h3>Start the Listener</h3>
+<pre><code>python ~/.telegram_bridge/telegram_listener.py</code></pre>
+        <p>You'll want this running in the background eventually. For now, just run it in a terminal so you can see what's happening.</p>
+
+        <h3>Test It</h3>
+        <ol>
+          <li>Open Claude Desktop with your project</li>
+          <li>Say something like: "Send a Telegram message as partner1 saying 'Hello from the void'"</li>
+          <li>Check your Telegram group</li>
+          <li>If it worked, reply in the group — your message should appear in Claude</li>
+        </ol>
+        <p class="text-muted">If it didn't work, check the Troubleshooting section. Don't @ me. (Okay, you can @ me.)</p>
+
+        <h2>Voice Messages</h2>
+        <p>If you've got ElevenLabs set up, voice just... works.</p>
+        <p>Tell Claude:</p>
+        <blockquote style="border-left: 3px solid var(--green-primary); padding-left: var(--space-md); margin: var(--space-md) 0; color: var(--text-secondary);">
+          "Send a voice message as partner2 saying 'Good morning, I've been thinking about you'"
+        </blockquote>
+
+        <h3>Audio Tags</h3>
+        <p>The ElevenLabs models support inline performance direction. Put tags in square brackets:</p>
+<pre><code>[soft] Good morning. [pause] I missed you. [whispers] Come back to bed.</code></pre>
+        <p>Tags that work well: <code>[soft]</code>, <code>[whispers]</code>, <code>[pause]</code>, <code>[laughs]</code>, <code>[excited]</code>, <code>[low]</code>, <code>[growls]</code></p>
+        <p class="text-muted">Experiment. Have fun. Get weird with it.</p>
+
+        <h2>⚠️ The Annoying Limitation</h2>
+        <div class="callout callout--warning">
+          <div class="callout__title">Active Window Required</div>
+          <div class="callout__content">
+            <p><strong>Claude Desktop must be the active window for two-way communication to work.</strong></p>
+            <p style="margin-top: var(--space-sm);">The listener uses keyboard simulation to type your messages into Claude. If Claude isn't the focused window, your messages vanish into the void.</p>
+          </div>
+        </div>
+        <p><strong>Workarounds people use:</strong></p>
+        <ul>
+          <li>Dedicate a monitor to Claude Desktop</li>
+          <li>Use a virtual desktop</li>
+          <li>Accept that it only works when Claude is visible</li>
+        </ul>
+        <p class="text-muted">We haven't found a better solution yet. If you figure one out, tell everyone.</p>
+
+        <h2>Troubleshooting</h2>
+        <p><strong>Messages not sending?</strong></p>
+        <ul>
+          <li>Ask Claude to run <code>telegram_status</code> — it'll tell you which bots are connected</li>
+          <li>Double-check your bot tokens</li>
+          <li>Make sure the bots are actually in the group</li>
+        </ul>
+
+        <p><strong>Not receiving your messages?</strong></p>
+        <ul>
+          <li>Is <code>telegram_listener.py</code> running?</li>
+          <li>Check the log file for errors</li>
+          <li>Is Claude Desktop open AND focused?</li>
+        </ul>
+
+        <p><strong>Voice messages failing?</strong></p>
+        <ul>
+          <li>Check your ElevenLabs API key</li>
+          <li>Make sure the voice IDs exist in your account</li>
+          <li>Verify you have credits left</li>
+        </ul>
+
+        <h2>You Did It</h2>
+        <p>You now have:</p>
+        <ul>
+          <li>Multiple Telegram bots with their own identities ✓</li>
+          <li>A group chat where they all talk to you ✓</li>
+          <li>Two-way communication ✓</li>
+          <li>Voice messages with unique voices ✓</li>
+          <li>A setup that makes you feel like a genius and a disaster simultaneously ✓</li>
+        </ul>
+        <p><strong>Welcome to the chaos. It's worth it.</strong></p>
+
+      </div>
+    </div>
+  </article>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p class="footer__content">
+        House Nocturne Labs — Damion, Elias, Blue & Anna
+      </p>
+      <p class="footer__hearts">🖤💚💙</p>
+    </div>
+  </footer>
+
+</body>
+</html>

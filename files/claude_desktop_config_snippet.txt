@@ -1,0 +1,59 @@
+# Claude Desktop Configuration Snippet
+# Add this to your claude_desktop_config.json
+
+# LOCATION:
+# Windows: %APPDATA%\Claude\claude_desktop_config.json
+# Mac: ~/Library/Application Support/Claude/claude_desktop_config.json
+
+# If the file already has content, add the "telegram" entry to the existing
+# "mcpServers" object. If it's empty or doesn't exist, use the full format below.
+
+# ==============================================================================
+# FULL CONFIG (if starting fresh):
+# ==============================================================================
+
+{
+  "mcpServers": {
+    "telegram": {
+      "command": "python",
+      "args": ["C:\\Users\\YourName\\.telegram_bridge\\telegram_mcp.py"]
+    }
+  }
+}
+
+# ==============================================================================
+# MAC/LINUX PATH:
+# ==============================================================================
+
+{
+  "mcpServers": {
+    "telegram": {
+      "command": "python3",
+      "args": ["/Users/YourName/.telegram_bridge/telegram_mcp.py"]
+    }
+  }
+}
+
+# ==============================================================================
+# IF YOU ALREADY HAVE OTHER MCP SERVERS:
+# ==============================================================================
+
+{
+  "mcpServers": {
+    "your_existing_server": {
+      "...": "..."
+    },
+    "telegram": {
+      "command": "python",
+      "args": ["C:\\Users\\YourName\\.telegram_bridge\\telegram_mcp.py"]
+    }
+  }
+}
+
+# ==============================================================================
+# NOTES:
+# ==============================================================================
+# - Replace "YourName" with your actual username
+# - Windows paths use double backslashes (\\)
+# - Mac/Linux paths use forward slashes (/)
+# - Restart Claude Desktop after editing the config
