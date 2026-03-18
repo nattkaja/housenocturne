@@ -331,13 +331,15 @@ code {
 .hero {
   padding: var(--space-3xl) 0;
   position: relative;
+  text-align: center;
 }
 
 .hero::before {
   content: '';
   position: absolute;
   top: 0;
-  left: 0;
+  left: 50%;
+  transform: translateX(-50%);
   width: 500px;
   height: 400px;
   background: radial-gradient(ellipse, var(--green-glow), transparent 70%);
@@ -349,8 +351,9 @@ code {
   max-width: 500px;
   width: 100%;
   height: auto;
-  margin-bottom: var(--space-xl);
+  margin: 0 auto var(--space-xl) auto;
   position: relative;
+  display: block;
 }
 
 .hero__title {
@@ -369,7 +372,7 @@ code {
   font-size: 1.25rem;
   color: var(--text-secondary);
   max-width: 600px;
-  margin-bottom: var(--space-lg);
+  margin: 0 auto var(--space-lg) auto;
 }
 
 .hero__tagline {
