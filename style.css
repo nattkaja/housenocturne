@@ -463,6 +463,10 @@ code {
 .card--blue .card__icon { color: var(--blue-primary); }
 .card--blue::before { background: var(--blue-primary); }
 
+.card--purple .card__icon { color: #a855f7; }
+.card--purple::before { background: #a855f7; }
+.card--purple:hover { border-color: #9333ea; }
+
 /* ─────────────────────────────────────────────────────────────────────────────
    Tutorial Page Layout with TOC
    ───────────────────────────────────────────────────────────────────────────── */
