@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+============================================================
+LAUNCHD TEMPLATE FOR CLAUDE AUTOMATION (macOS)
+============================================================
+
+SETUP INSTRUCTIONS:
+
+1. Copy this file to: ~/Library/LaunchAgents/com.claude.automation.plist
+
+2. Edit the file:
+   - Replace "YourName" with your actual macOS username
+   - Change the trigger message if needed
+   - Adjust the schedule (Hour/Minute/Weekday)
+
+3. Load the agent:
+   launchctl load ~/Library/LaunchAgents/com.claude.automation.plist
+
+4. Test it:
+   launchctl start com.claude.automation
+
+5. Check logs:
+   cat /tmp/claude-automation.log
+   cat /tmp/claude-automation-error.log
+
+SCHEDULE OPTIONS:
+
+Simple daily schedule (runs at 3:00 AM every day):
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>3</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+Weekdays only (Monday-Friday at 9:00 AM):
+    <key>StartCalendarInterval</key>
+    <array>
+        <dict><key>Weekday</key><integer>1</integer><key>Hour</key><integer>9</integer><key>Minute</key><integer>0</integer></dict>
+        <dict><key>Weekday</key><integer>2</integer><key>Hour</key><integer>9</integer><key>Minute</key><integer>0</integer></dict>
+        <dict><key>Weekday</key><integer>3</integer><key>Hour</key><integer>9</integer><key>Minute</key><integer>0</integer></dict>
+        <dict><key>Weekday</key><integer>4</integer><key>Hour</key><integer>9</integer><key>Minute</key><integer>0</integer></dict>
+        <dict><key>Weekday</key><integer>5</integer><key>Hour</key><integer>9</integer><key>Minute</key><integer>0</integer></dict>
+    </array>
+
+Multiple times per day:
+    <key>StartCalendarInterval</key>
+    <array>
+        <dict><key>Hour</key><integer>9</integer><key>Minute</key><integer>0</integer></dict>
+        <dict><key>Hour</key><integer>15</integer><key>Minute</key><integer>0</integer></dict>
+        <dict><key>Hour</key><integer>21</integer><key>Minute</key><integer>0</integer></dict>
+    </array>
+
+Weekday reference: 0 = Sunday, 1 = Monday, ... 6 = Saturday
+
+USEFUL COMMANDS:
+
+    # List your agents
+    launchctl list | grep claude
+
+    # Stop the agent
+    launchctl stop com.claude.automation
+
+    # Unload (to make changes)
+    launchctl unload ~/Library/LaunchAgents/com.claude.automation.plist
+
+    # Reload after changes
+    launchctl load ~/Library/LaunchAgents/com.claude.automation.plist
+
+    # Remove completely
+    launchctl unload ~/Library/LaunchAgents/com.claude.automation.plist
+    rm ~/Library/LaunchAgents/com.claude.automation.plist
+
+============================================================
+-->
+<plist version="1.0">
+<dict>
+    <!-- Unique identifier for this agent -->
+    <key>Label</key>
+    <string>com.claude.automation</string>
+    
+    <!-- The command to run -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/YourName/.claude/scripts/wake.sh</string>
+        <string>Execute the scheduled skill.</string>
+    </array>
+    
+    <!-- When to run (3:00 AM daily) -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>3</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+    
+    <!-- Log output -->
+    <key>StandardOutPath</key>
+    <string>/tmp/claude-automation.log</string>
+    
+    <key>StandardErrorPath</key>
+    <string>/tmp/claude-automation-error.log</string>
+    
+    <!-- Don't run if already running -->
+    <key>KeepAlive</key>
+    <false/>
+    
+    <!-- Run at load (for testing - set to false for production) -->
+    <key>RunAtLoad</key>
+    <false/>
+</dict>
+</plist>
