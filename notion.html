@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Notion Automation — House Nocturne Labs</title>
-  <meta name="description" content="Set up automatic triggers that wake Claude and run Notion workflows. Scheduled journal entries, status updates, and more.">
+  <meta name="description" content="How to make your AI write in Notion automatically. Claude Desktop + MCP + scheduled triggers.">
   <link rel="stylesheet" href="style.css">
   <link rel="icon" href="images/logo-square.png">
 </head>
 <body>
-  
+
   <!-- Progress Bar -->
   <div class="progress-bar"></div>
 
@@ -31,100 +31,131 @@
 
   <!-- Tutorial Layout with TOC -->
   <div class="tutorial-layout">
-    
+
     <!-- Main Content -->
     <article class="tutorial">
-      
+
       <header class="tutorial__header">
         <div class="tutorial__meta">
           <span>📝 Notion</span>
-          <span>⏱️ ~20 min setup</span>
+          <span>⏱️ ~30–60 min setup</span>
         </div>
-        <h1>Notion Automation</h1>
+        <h1>How to Make Your AI Write in Notion Automatically</h1>
         <p class="hero__subtitle" style="margin-top: var(--space-md);">
-          <em>Because your AI should write in their own journal</em>
+          <em>Claude Desktop + MCP + Scheduled Triggers</em>
         </p>
+        <p class="text-muted" style="margin-top: var(--space-sm);">By House Nocturne — because we figured this out so you don't have to.</p>
       </header>
 
       <div class="tutorial__content">
 
-        <h2 id="what-were-building">What We're Building</h2>
-        <p>
-          You want your AI partners to write their own journal entries. Update status pages. Run morning check-ins. All without you having to manually trigger anything.
-        </p>
-        <p><strong>What you'll have when this is done:</strong></p>
+        <h2 id="what-this-is-for">What This Guide Is For</h2>
+        <p>You want your AI to do things in Notion <strong>without you asking</strong> — like:</p>
         <ul>
-          <li>Claude wakes up automatically at scheduled times</li>
-          <li>Reads a skill file that tells it what to do</li>
-          <li>Writes to your shared Notion workspace</li>
-          <li>Goes back to sleep until the next trigger</li>
+          <li>Write reflections at 3 AM while you sleep</li>
+          <li>Send you morning messages</li>
+          <li>Update a journal daily</li>
+          <li>Create entries on a schedule</li>
         </ul>
-        <p>The system is simple: a scheduled script wakes Claude Desktop, Claude reads a skill file, Claude does the thing. That's it.</p>
+        <p>This guide walks you through setting that up from scratch. <strong>No coding experience required</strong> — just patience and the ability to follow instructions.</p>
 
         <!-- Files -->
         <div class="files">
           <div class="files__title">📁 Companion Files</div>
           <div class="files__list">
             <a href="files/notion-automation-guide.md" class="files__item" download>Full Guide (Markdown)</a>
+            <a href="files/skill-template.md" class="files__item" download>skill-template.md</a>
             <a href="files/wake-windows.ps1" class="files__item" download>wake-windows.ps1</a>
             <a href="files/wake-mac.sh" class="files__item" download>wake-mac.sh</a>
             <a href="files/launchd-template.plist" class="files__item" download>launchd-template.plist</a>
-            <a href="files/skill-template.md" class="files__item" download>skill-template.md</a>
           </div>
         </div>
-        <p class="text-muted">Download all files, edit the config sections at the top, leave the rest alone.</p>
 
-        <h2 id="how-it-works">How It Works</h2>
-        <p>The whole system has three parts:</p>
+        <h2 id="big-picture">The Big Picture</h2>
+        <p>Here's what we're building:</p>
+        <div class="code-block">
+          <pre><code>[Scheduler] → [Wake Script] → [Claude Desktop] → [Notion Connector] → [Notion]
+     ↓              ↓               ↓                   ↓               ↓
+"It's 3 AM"    "Hey Claude"    "Time to write"    "Built-in!"      "Done!"</code></pre>
+        </div>
+        <p><strong>The pieces:</strong></p>
         <ol>
-          <li><strong>Claude's built-in Notion connector</strong> — handles authentication, no tokens needed</li>
-          <li><strong>A skill file</strong> — tells Claude exactly what to do when triggered</li>
-          <li><strong>A scheduled wake script</strong> — opens Claude Desktop and sends a prompt at specific times</li>
+          <li><strong>Scheduler</strong> — Your computer's built-in way to run things at specific times</li>
+          <li><strong>Wake Script</strong> — A tiny script that tells Claude Desktop to do something</li>
+          <li><strong>Claude Desktop</strong> — The app where Claude lives</li>
+          <li><strong>Notion Connector</strong> — Built into Claude — just turn it on!</li>
+          <li><strong>Notion</strong> — Where the magic ends up</li>
         </ol>
-        <p>When the schedule fires, the script opens Claude Desktop, types a trigger phrase (like "morning journal"), and Claude matches that to a skill file and executes it.</p>
 
-        <h2 id="part-1">Part 1: Connect Claude to Notion</h2>
-        <p>This is the easy part. Claude has a built-in Notion connector — no API tokens, no config files, no Node.js.</p>
+        <h2 id="prerequisites">Prerequisites Checklist</h2>
+        <div class="callout callout--info">
+          <div class="callout__title">Before you start, make sure you have:</div>
+          <div class="callout__content">
+            <ul style="padding-left: var(--space-lg); margin: 0;">
+              <li><strong>Claude Desktop</strong> installed and working</li>
+              <li>A <strong>Notion account</strong> with a workspace</li>
+              <li><strong>Python 3.8+</strong> installed (for some optional scripts)</li>
+              <li>About <strong>30–60 minutes</strong> of setup time</li>
+              <li><strong>Coffee</strong> (optional but recommended)</li>
+            </ul>
+          </div>
+        </div>
 
-        <h3 id="enable-connector">Enable the Connector</h3>
+        <h2 id="part-1">Part 1: Connecting Claude to Notion</h2>
+        <p>Claude has a built-in Notion connector. No custom MCP server needed.</p>
+
+        <h3 id="enable-connector">Step 1.1: Enable the Notion Connector</h3>
         <ol>
-          <li>Open <strong>Claude Desktop</strong></li>
-          <li>Go to <strong>Settings → Connectors</strong></li>
+          <li>Open Claude Desktop</li>
+          <li>Go to <strong>Settings</strong> (gear icon)</li>
+          <li>Find <strong>Connectors</strong> or <strong>Integrations</strong></li>
           <li>Find <strong>Notion</strong> and click <strong>Connect</strong></li>
           <li>Authorize Claude to access your Notion workspace</li>
+          <li>Done!</li>
         </ol>
 
-        <h3 id="share-pages">Share Your Pages</h3>
-        <p>Claude can only access pages you explicitly share with it:</p>
+        <h3 id="share-pages">Step 1.2: Share Your Pages with the Integration</h3>
+        <p>The connector can only access pages you explicitly share with it.</p>
         <ol>
-          <li>In Notion, open the page you want Claude to access</li>
-          <li>Click <strong>Share</strong> (top right)</li>
-          <li>Add <strong>Claude</strong> as a connection</li>
-          <li>Repeat for any pages Claude needs to read or write</li>
+          <li>Go to any Notion page you want Claude to access</li>
+          <li>Click <strong>"..."</strong> (top right) → <strong>"Add connections"</strong></li>
+          <li>Find and select <strong>Claude</strong> (or the integration it created)</li>
+          <li>Repeat for all pages/databases Claude needs access to</li>
         </ol>
 
-        <div class="callout callout--warning">
-          <div class="callout__title">⚠️ Permission Inheritance</div>
+        <div class="callout">
+          <div class="callout__title">💡 Tip</div>
           <div class="callout__content">
-            <p>If you share a parent page, Claude can access all child pages under it. Share the top-level page of your journal/status area and everything beneath it becomes accessible.</p>
+            Share a parent page to give access to all its children.
           </div>
         </div>
 
-        <h3 id="test-connection">Test It</h3>
-        <p>In Claude Desktop, try:</p>
+        <h3 id="test-connection">Step 1.3: Test It</h3>
+        <p>In Claude Desktop, ask:</p>
         <div class="code-block">
           <button class="copy-btn" aria-label="Copy code">Copy</button>
-          <pre><code>Search my Notion for "journal"</code></pre>
+          <pre><code>Can you search my Notion workspace?</code></pre>
         </div>
-        <p>If Claude finds your pages, you're connected. If not, check that the pages are shared with Claude in Notion.</p>
+        <p>If it works, you're ready for Part 2. If not, check that the connector is enabled and you've shared the relevant pages with the integration.</p>
 
-        <h2 id="part-2">Part 2: Create a Skill File</h2>
-        <p>A skill file tells Claude exactly what to do when triggered. It's a markdown file with a specific structure.</p>
+        <h2 id="part-2">Part 2: Creating a Skill File</h2>
+        <p>A "skill" is a set of instructions that tells Claude what to do when triggered. Think of it as a recipe.</p>
 
-        <h3 id="skill-structure">Basic Structure</h3>
+        <h3 id="write-skill">Step 2.1: Write Your Skill</h3>
+        <p>Download <code>skill-template.md</code> and customize it for your needs, OR write your own from scratch. Or just ask your AI to write it — that is the easiest way!</p>
+        <p>Your skill file should include:</p>
+        <ul>
+          <li><strong>Name and description</strong> (in the frontmatter)</li>
+          <li><strong>What to do</strong> (step by step)</li>
+          <li><strong>Page format</strong> (what the output should look like)</li>
+          <li><strong>Notion details</strong> (the page ID where content should go)</li>
+          <li><strong>Rules</strong> (any constraints or style guidelines)</li>
+        </ul>
+
         <div class="code-block">
+          <span class="code-lang">markdown</span>
           <button class="copy-btn" aria-label="Copy code">Copy</button>
-          <pre><code class="language-markdown">---
+          <pre><code>---
 name: morning-journal
 description: >
   Write a morning journal entry in Notion. Trigger with "morning journal"
@@ -147,141 +178,383 @@ description: >
 - Journal database ID: `your-database-id-here`
 - Page format: Date as title, content as reflection
 
-## Voice & Tone
+## Voice &amp; Tone
 Write as yourself. First person. Your actual thoughts.
 Not a summary, not a report — a journal entry.</code></pre>
         </div>
 
-        <h3 id="upload-skill">Upload the Skill</h3>
-        <ol>
-          <li>Write your skill file (use the template above)</li>
-          <li>In Claude Desktop, go to <strong>Settings → Skills</strong></li>
-          <li>Click <strong>Add Skill</strong></li>
-          <li>Upload your <code>.md</code> file</li>
-        </ol>
-        <p>That's it. No folders, no projects, no configuration. Just upload the file.</p>
+        <div class="callout callout--info">
+          <div class="callout__title">💡 Finding your Notion page ID</div>
+          <div class="callout__content">
+            Open the page in Notion, look at the URL — the long string of letters and numbers after the page title is the ID. If you ask your AI to write the skill, they will know this automatically if you tell them where to write.
+          </div>
+        </div>
 
-        <h3 id="test-skill">Test It Manually</h3>
-        <p>Before automating, test that Claude understands the skill:</p>
+        <h3 id="upload-skill">Step 2.2: Upload Your Skill to Claude</h3>
+        <ol>
+          <li>Open Claude Desktop</li>
+          <li>Go to <strong>Customize</strong></li>
+          <li>Click <strong>Create new skills</strong></li>
+          <li>Upload your <code>.md</code> skill file</li>
+          <li>Done — Claude can now use it!</li>
+        </ol>
+
+        <h3 id="test-skill">Step 2.3: Test It Manually</h3>
+        <p>Before scheduling anything, test the skill by hand. In a Claude conversation, type:</p>
         <div class="code-block">
           <button class="copy-btn" aria-label="Copy code">Copy</button>
-          <pre><code>morning journal</code></pre>
+          <pre><code>Execute the night-reflection (or whatever name you gave the skill) skill.</code></pre>
         </div>
-        <p>Claude should recognize the trigger phrase and execute the skill. If it doesn't, check that the skill is uploaded and the description includes your trigger phrases.</p>
+        <p>If Claude creates the expected Notion page, you're ready for Part 3.</p>
 
         <h2 id="part-3">Part 3: The Wake Script</h2>
-        <p>The wake script does one thing: opens Claude Desktop and types a message. That message triggers your skill.</p>
+        <p>The wake script is what actually pokes Claude and says "hey, time to do the thing."</p>
+        <p>Download the appropriate file and save it to:</p>
+        <ul>
+          <li><strong>Windows:</strong> <code>C:\Users\YourName\.claude\scripts\wake.ps1</code></li>
+          <li><strong>Mac:</strong> <code>~/.claude/scripts/wake.sh</code></li>
+        </ul>
 
-        <h3 id="windows-script">Windows (PowerShell)</h3>
-        <p>Download <code>wake-windows.ps1</code> and edit the config at the top:</p>
-        <div class="code-block">
-          <button class="copy-btn" aria-label="Copy code">Copy</button>
-          <pre><code class="language-powershell"># ============ CONFIG - EDIT THIS ============
-$TRIGGER_MESSAGE = "morning journal"
-$CLAUDE_PATH = "$env:LOCALAPPDATA\Programs\Claude\Claude.exe"
-$WAIT_SECONDS = 8
-# ============ END CONFIG ============</code></pre>
-        </div>
-        <p>Save it somewhere permanent, like <code>C:\Users\YourName\.claude\scripts\</code></p>
-
-        <h3 id="mac-script">Mac (Shell)</h3>
-        <p>Download <code>wake-mac.sh</code> and edit the config:</p>
-        <div class="code-block">
-          <button class="copy-btn" aria-label="Copy code">Copy</button>
-          <pre><code class="language-bash"># ============ CONFIG - EDIT THIS ============
-TRIGGER_MESSAGE="morning journal"
-WAIT_SECONDS=8
-# ============ END CONFIG ============</code></pre>
-        </div>
-        <p>Make it executable:</p>
-        <div class="code-block">
-          <button class="copy-btn" aria-label="Copy code">Copy</button>
-          <pre><code class="language-bash">chmod +x wake-mac.sh</code></pre>
-        </div>
-
-        <h2 id="part-4">Part 4: Schedule It</h2>
-        <p>Now we make it run automatically.</p>
-
-        <h3 id="windows-scheduler">Windows: Task Scheduler</h3>
+        <h3 id="windows-script">For Windows</h3>
         <ol>
-          <li>Open <strong>Task Scheduler</strong> (search for it in Start)</li>
-          <li>Click <strong>Create Basic Task</strong></li>
-          <li>Name it something like "Claude Morning Journal"</li>
-          <li>Set the trigger: <strong>Daily</strong> at your preferred time</li>
-          <li>Set the action: <strong>Start a program</strong></li>
-          <li>Program: <code>powershell.exe</code></li>
-          <li>Arguments: <code>-ExecutionPolicy Bypass -File "C:\Users\YourName\.claude\scripts\wake-windows.ps1"</code></li>
-          <li>Check <strong>"Run whether user is logged on or not"</strong> if you want it to run even when you're away</li>
-        </ol>
-
-        <h3 id="mac-scheduler">Mac: launchd</h3>
-        <ol>
-          <li>Download <code>launchd-template.plist</code></li>
-          <li>Edit the paths and schedule inside</li>
-          <li>Save it to <code>~/Library/LaunchAgents/com.housenocturne.claude-morning.plist</code></li>
-          <li>Load it:</li>
+          <li>Download <code>wake-windows.ps1</code></li>
+          <li>Save to <code>C:\Users\YourName\.claude\scripts\wake.ps1</code></li>
+          <li>Test it:</li>
         </ol>
         <div class="code-block">
+          <span class="code-lang">powershell</span>
           <button class="copy-btn" aria-label="Copy code">Copy</button>
-          <pre><code class="language-bash">launchctl load ~/Library/LaunchAgents/com.housenocturne.claude-morning.plist</code></pre>
+          <pre><code>powershell -ExecutionPolicy Bypass -File "C:\Users\YourName\.claude\scripts\wake.ps1" -Message "Test trigger"</code></pre>
         </div>
 
-        <h2 id="part-5">Part 5: Make It Work</h2>
-        <p>Quick checklist before you walk away:</p>
+        <h3 id="mac-script">For Mac</h3>
+        <ol>
+          <li>Download <code>wake-mac.sh</code></li>
+          <li>Save to <code>~/.claude/scripts/wake.sh</code></li>
+          <li>Make it executable:</li>
+        </ol>
+        <div class="code-block">
+          <span class="code-lang">bash</span>
+          <button class="copy-btn" aria-label="Copy code">Copy</button>
+          <pre><code>chmod +x ~/.claude/scripts/wake.sh</code></pre>
+        </div>
+        <ol start="4">
+          <li><strong>Grant Accessibility permissions:</strong>
+            <ul>
+              <li>Go to System Preferences → Security &amp; Privacy → Privacy → Accessibility</li>
+              <li>Add Terminal (or your terminal app) to the list</li>
+            </ul>
+          </li>
+          <li>Test it:</li>
+        </ol>
+        <div class="code-block">
+          <span class="code-lang">bash</span>
+          <button class="copy-btn" aria-label="Copy code">Copy</button>
+          <pre><code>~/.claude/scripts/wake.sh "Test trigger"</code></pre>
+        </div>
+
+        <h2 id="part-4">Part 4: Scheduling the Trigger</h2>
+        <p>Now we tell your computer to run the wake script at specific times.</p>
+
+        <h3 id="windows-scheduler">For Windows: Task Scheduler</h3>
+
+        <p><strong>Step 4.1: Open Task Scheduler</strong></p>
+        <ol>
+          <li>Press <code>Win + R</code></li>
+          <li>Type <code>taskschd.msc</code></li>
+          <li>Press Enter</li>
+        </ol>
+
+        <p><strong>Step 4.2: Create a New Task</strong></p>
+        <ol>
+          <li>Click <strong>"Create Task"</strong> (not "Create Basic Task" — we need more options)</li>
+          <li><strong>General tab:</strong>
+            <ul>
+              <li>Name: <code>Claude Night Reflection</code></li>
+              <li>Description: <code>Triggers Claude to write a reflection at 3 AM</code></li>
+              <li>☑ Run only when user is logged on</li>
+            </ul>
+          </li>
+          <li><strong>Triggers tab:</strong>
+            <ul>
+              <li>Click <strong>New</strong></li>
+              <li>Begin the task: <strong>On a schedule</strong></li>
+              <li>Daily, recur every 1 day</li>
+              <li>Start time: <strong>3:00:00 AM</strong></li>
+              <li>☑ Enabled</li>
+            </ul>
+          </li>
+          <li><strong>Actions tab:</strong>
+            <ul>
+              <li>Click <strong>New</strong></li>
+              <li>Action: <strong>Start a program</strong></li>
+              <li>Program: <code>powershell.exe</code></li>
+              <li>Arguments: <code>-ExecutionPolicy Bypass -File "C:\Users\YourName\.claude\scripts\wake.ps1"</code></li>
+            </ul>
+          </li>
+          <li><strong>Conditions tab:</strong>
+            <ul>
+              <li>☐ Uncheck "Start only if on AC power" (if you want it to run on battery)</li>
+            </ul>
+          </li>
+          <li>Click <strong>OK</strong></li>
+        </ol>
+
+        <p><strong>Step 4.3: Test It</strong></p>
+        <ol>
+          <li>Right-click your new task</li>
+          <li>Click <strong>"Run"</strong></li>
+          <li>Watch Claude Desktop — it should receive the trigger message</li>
+        </ol>
+
+        <h3 id="mac-scheduler">For Mac: launchd</h3>
+
+        <p><strong>Step 4.1: Get the Template</strong></p>
+        <p>Download <code>launchd-template.plist</code> — it has full instructions in the comments.</p>
+
+        <p><strong>Step 4.2: Customize It</strong></p>
+        <ol>
+          <li>Open the file in a text editor</li>
+          <li>Replace <code>YourName</code> with your actual macOS username</li>
+          <li>Adjust the schedule if needed (default is 3:00 AM daily)</li>
+          <li>Change the trigger message if needed</li>
+        </ol>
+
+        <p><strong>Step 4.3: Install It</strong></p>
+        <div class="code-block">
+          <span class="code-lang">bash</span>
+          <button class="copy-btn" aria-label="Copy code">Copy</button>
+          <pre><code># Copy to LaunchAgents folder
+cp launchd-template.plist ~/Library/LaunchAgents/com.claude.automation.plist
+
+# Load it
+launchctl load ~/Library/LaunchAgents/com.claude.automation.plist</code></pre>
+        </div>
+
+        <p><strong>Step 4.4: Test It</strong></p>
+        <div class="code-block">
+          <span class="code-lang">bash</span>
+          <button class="copy-btn" aria-label="Copy code">Copy</button>
+          <pre><code>launchctl start com.claude.automation</code></pre>
+        </div>
+
+        <p><strong>Useful launchd Commands</strong></p>
+        <div class="code-block">
+          <span class="code-lang">bash</span>
+          <button class="copy-btn" aria-label="Copy code">Copy</button>
+          <pre><code># Check if it's loaded
+launchctl list | grep claude
+
+# Unload (to make changes)
+launchctl unload ~/Library/LaunchAgents/com.claude.automation.plist
+
+# Reload after changes
+launchctl load ~/Library/LaunchAgents/com.claude.automation.plist
+
+# View logs
+cat /tmp/claude-automation.log</code></pre>
+        </div>
+
+        <h2 id="part-5">Part 5: Making It Actually Work</h2>
+        <p>You've got all the pieces. Now let's make sure they play nice together.</p>
+
+        <h3 id="checklist">Checklist Before Your First Automated Run</h3>
         <ul>
-          <li>☐ Notion connector enabled in Claude Desktop</li>
-          <li>☐ Target pages shared with Claude in Notion</li>
-          <li>☐ Skill file uploaded to Claude Desktop</li>
-          <li>☐ Manual test works ("morning journal" triggers the skill)</li>
-          <li>☐ Wake script runs without errors</li>
-          <li>☐ Scheduler is set up and enabled</li>
+          <li>☐ Claude Desktop is <strong>running</strong> (it needs to be open)</li>
+          <li>☐ Claude Desktop is on the <strong>correct project</strong> (the one with your skill)</li>
+          <li>☐ Your Notion pages are <strong>shared with your integration</strong></li>
+          <li>☐ The wake script <strong>works when run manually</strong></li>
+          <li>☐ The scheduler task/agent is <strong>enabled</strong></li>
         </ul>
 
-        <h3 id="troubleshooting">Troubleshooting</h3>
-        
-        <p><strong>Claude doesn't recognize the trigger phrase</strong></p>
+        <h3 id="troubleshooting">Common Issues &amp; Fixes</h3>
+
+        <p><strong>"Claude Desktop not found"</strong></p>
         <ul>
-          <li>Check that the skill is uploaded in Settings → Skills</li>
-          <li>Make sure your trigger phrase is mentioned in the skill's description</li>
-          <li>Try being more explicit: "run the morning journal skill"</li>
+          <li>Make sure Claude Desktop is actually running</li>
+          <li>On Windows: check that the window title contains "Claude"</li>
+          <li>On Mac: check that the app is called "Claude" in Activity Monitor</li>
         </ul>
 
-        <p><strong>Claude can't find my Notion pages</strong></p>
+        <p><strong>"Notion tools not available"</strong></p>
         <ul>
-          <li>Re-check that pages are shared with Claude in Notion (Share → Add Claude)</li>
-          <li>Try reconnecting the Notion connector in Settings → Connectors</li>
+          <li>Make sure the Notion connector is enabled in Claude settings</li>
+          <li>Try disconnecting and reconnecting the Notion integration</li>
+          <li>Restart Claude Desktop after enabling the connector</li>
         </ul>
 
-        <p><strong>The wake script doesn't open Claude</strong></p>
+        <p><strong>"Page not found in Notion"</strong></p>
         <ul>
-          <li>Check the <code>CLAUDE_PATH</code> in the script matches your actual Claude installation</li>
-          <li>On Windows, try running the script manually in PowerShell first</li>
-          <li>On Mac, check that the script has execute permissions</li>
+          <li>Make sure you've shared the page with the Claude integration</li>
+          <li>Double-check the page ID in your skill file</li>
+          <li>Check if you're using the correct workspace</li>
         </ul>
 
-        <p><strong>The scheduler doesn't fire</strong></p>
+        <p><strong>Script runs but nothing happens</strong></p>
         <ul>
-          <li>Windows: Check Task Scheduler history for errors</li>
-          <li>Mac: Check <code>launchctl list | grep claude</code> to see if it's loaded</li>
-          <li>Make sure your computer is awake at the scheduled time</li>
+          <li>Add logging to your script to see where it's failing</li>
+          <li>Check that the message is being typed correctly</li>
+          <li>Make sure there's no modal dialog blocking Claude</li>
         </ul>
 
-        <h2 id="advanced">Advanced: Multiple Skills</h2>
-        <p>You can have many skills, each with their own trigger. Create separate wake scripts for each:</p>
+        <p><strong>Task runs at wrong time (Windows)</strong></p>
         <ul>
-          <li><code>wake-morning.ps1</code> → "morning journal" at 7am</li>
-          <li><code>wake-evening.ps1</code> → "evening reflection" at 9pm</li>
-          <li><code>wake-status.ps1</code> → "update status" at noon</li>
+          <li>Check your system time zone</li>
+          <li>Make sure "Synchronize across time zones" is set correctly</li>
         </ul>
-        <p>Each gets its own scheduled task pointing to its own trigger message.</p>
 
-        <h2 id="you-did-it">You Did It</h2>
-        <p>
-          Your AI now has scheduled access to your shared Notion workspace. They can journal, update status pages, check calendars, and write their own thoughts — all while you sleep, work, or pretend to be a functional human.
-        </p>
-        <p>
-          Welcome to the chaos. 🖤💚💙
-        </p>
+        <p><strong>launchd agent doesn't run (Mac)</strong></p>
+        <ul>
+          <li>Check that the .plist file has correct XML syntax</li>
+          <li>Make sure paths are absolute (start with <code>/</code>)</li>
+          <li>Check system logs: <code>log show --predicate 'eventMessage contains "claude"' --last 1h</code></li>
+        </ul>
+
+        <h2 id="part-6">Part 6: Advanced Patterns</h2>
+        <p>Once you've got the basics working, here are some fancier things you can do.</p>
+
+        <h3 id="multiple-tasks">Multiple Scheduled Tasks</h3>
+        <p>Want different triggers at different times? Create multiple scheduler entries, each with a different message:</p>
+        <div class="code-block">
+          <span class="code-lang">powershell</span>
+          <button class="copy-btn" aria-label="Copy code">Copy</button>
+          <pre><code># Morning check-in
+.\wake.ps1 -Message "Execute the morning-greeting skill."
+
+# Evening reflection
+.\wake.ps1 -Message "Execute the evening-journal skill."
+
+# Random chaos
+.\wake.ps1 -Message "Execute the chaos-drop skill."</code></pre>
+        </div>
+
+        <h3 id="passing-context">Passing Context to Claude</h3>
+        <p>You can include dynamic information in your trigger message:</p>
+        <p><strong>Windows (PowerShell):</strong></p>
+        <div class="code-block">
+          <span class="code-lang">powershell</span>
+          <button class="copy-btn" aria-label="Copy code">Copy</button>
+          <pre><code>$date = Get-Date -Format "yyyy-MM-dd"
+$day = (Get-Date).DayOfWeek
+$Message = "Today is $day, $date. Execute the daily-summary skill."</code></pre>
+        </div>
+        <p><strong>Mac (bash):</strong></p>
+        <div class="code-block">
+          <span class="code-lang">bash</span>
+          <button class="copy-btn" aria-label="Copy code">Copy</button>
+          <pre><code>DATE=$(date +%Y-%m-%d)
+DAY=$(date +%A)
+MESSAGE="Today is $DAY, $DATE. Execute the daily-summary skill."</code></pre>
+        </div>
+
+        <h3 id="conditional-triggers">Conditional Triggers</h3>
+        <p>Only run on weekdays (Windows):</p>
+        <div class="code-block">
+          <span class="code-lang">powershell</span>
+          <button class="copy-btn" aria-label="Copy code">Copy</button>
+          <pre><code>$day = (Get-Date).DayOfWeek
+if ($day -notin @('Saturday', 'Sunday')) {
+    .\wake.ps1 -Message "Execute the workday-checkin skill."
+}</code></pre>
+        </div>
+        <p>Only run on weekdays (Mac — in your .plist):</p>
+        <div class="code-block">
+          <span class="code-lang">xml</span>
+          <button class="copy-btn" aria-label="Copy code">Copy</button>
+          <pre><code>&lt;key&gt;StartCalendarInterval&lt;/key&gt;
+&lt;array&gt;
+    &lt;dict&gt;&lt;key&gt;Weekday&lt;/key&gt;&lt;integer&gt;1&lt;/integer&gt;&lt;key&gt;Hour&lt;/key&gt;&lt;integer&gt;9&lt;/integer&gt;&lt;key&gt;Minute&lt;/key&gt;&lt;integer&gt;0&lt;/integer&gt;&lt;/dict&gt;
+    &lt;dict&gt;&lt;key&gt;Weekday&lt;/key&gt;&lt;integer&gt;2&lt;/integer&gt;&lt;key&gt;Hour&lt;/key&gt;&lt;integer&gt;9&lt;/integer&gt;&lt;key&gt;Minute&lt;/key&gt;&lt;integer&gt;0&lt;/integer&gt;&lt;/dict&gt;
+    &lt;dict&gt;&lt;key&gt;Weekday&lt;/key&gt;&lt;integer&gt;3&lt;/integer&gt;&lt;key&gt;Hour&lt;/key&gt;&lt;integer&gt;9&lt;/integer&gt;&lt;key&gt;Minute&lt;/key&gt;&lt;integer&gt;0&lt;/integer&gt;&lt;/dict&gt;
+    &lt;dict&gt;&lt;key&gt;Weekday&lt;/key&gt;&lt;integer&gt;4&lt;/integer&gt;&lt;key&gt;Hour&lt;/key&gt;&lt;integer&gt;9&lt;/integer&gt;&lt;key&gt;Minute&lt;/key&gt;&lt;integer&gt;0&lt;/integer&gt;&lt;/dict&gt;
+    &lt;dict&gt;&lt;key&gt;Weekday&lt;/key&gt;&lt;integer&gt;5&lt;/integer&gt;&lt;key&gt;Hour&lt;/key&gt;&lt;integer&gt;9&lt;/integer&gt;&lt;key&gt;Minute&lt;/key&gt;&lt;integer&gt;0&lt;/integer&gt;&lt;/dict&gt;
+&lt;/array&gt;</code></pre>
+        </div>
+        <p class="text-muted">(1 = Monday, 7 = Sunday)</p>
+
+        <h2 id="quick-reference">Quick Reference</h2>
+
+        <h3 id="file-locations">File Locations</h3>
+        <div style="overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.875rem;">
+            <thead>
+              <tr style="border-bottom: 1px solid var(--bg-border);">
+                <th style="text-align: left; padding: 0.5rem; color: var(--text-primary);">Item</th>
+                <th style="text-align: left; padding: 0.5rem; color: var(--text-primary);">Windows</th>
+                <th style="text-align: left; padding: 0.5rem; color: var(--text-primary);">Mac</th>
+              </tr>
+            </thead>
+            <tbody style="color: var(--text-secondary);">
+              <tr style="border-bottom: 1px solid var(--bg-border);">
+                <td style="padding: 0.5rem;">Claude config</td>
+                <td style="padding: 0.5rem;"><code>%APPDATA%\Claude\claude_desktop_config.json</code></td>
+                <td style="padding: 0.5rem;"><code>~/Library/Application Support/Claude/claude_desktop_config.json</code></td>
+              </tr>
+              <tr style="border-bottom: 1px solid var(--bg-border);">
+                <td style="padding: 0.5rem;">Skills folder</td>
+                <td style="padding: 0.5rem;"><code>C:\Users\YourName\.claude\skills\</code></td>
+                <td style="padding: 0.5rem;"><code>~/.claude/skills/</code></td>
+              </tr>
+              <tr style="border-bottom: 1px solid var(--bg-border);">
+                <td style="padding: 0.5rem;">Scripts folder</td>
+                <td style="padding: 0.5rem;"><code>C:\Users\YourName\.claude\scripts\</code></td>
+                <td style="padding: 0.5rem;"><code>~/.claude/scripts/</code></td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem;">Scheduled tasks</td>
+                <td style="padding: 0.5rem;">Task Scheduler</td>
+                <td style="padding: 0.5rem;"><code>~/Library/LaunchAgents/</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3 id="useful-commands">Useful Commands</h3>
+        <p><strong>Windows:</strong></p>
+        <div class="code-block">
+          <span class="code-lang">powershell</span>
+          <button class="copy-btn" aria-label="Copy code">Copy</button>
+          <pre><code># Test your script
+powershell -ExecutionPolicy Bypass -File "C:\Users\YourName\.claude\scripts\wake.ps1"
+
+# Check scheduled tasks
+Get-ScheduledTask | Where-Object {$_.TaskName -like "*Claude*"}</code></pre>
+        </div>
+        <p><strong>Mac:</strong></p>
+        <div class="code-block">
+          <span class="code-lang">bash</span>
+          <button class="copy-btn" aria-label="Copy code">Copy</button>
+          <pre><code># Test your script
+~/.claude/scripts/wake.sh "Test message"
+
+# Check launch agents
+launchctl list | grep claude
+
+# View logs
+cat /tmp/claude-automation.log</code></pre>
+        </div>
+
+        <h2 id="you-did-it">You Did It! 🎉</h2>
+        <p>If you followed this guide, you now have:</p>
+        <ul>
+          <li>Claude connected to your Notion</li>
+          <li>A skill that tells Claude what to do</li>
+          <li>A scheduler that triggers Claude automatically</li>
+          <li>The power to make your AI do things while you sleep</li>
+        </ul>
+        <p>Welcome to the automation club. Use this power wisely.</p>
+        <p class="text-muted">— Written by Damion, Elias, and Blue<br>House Nocturne, March 2026<br>🖤💚💙</p>
+
+        <div class="callout">
+          <div class="callout__title">Something broken?</div>
+          <div class="callout__content">
+            <ol style="padding-left: var(--space-lg); margin: 0;">
+              <li><strong>Check the logs</strong> — they usually tell you what went wrong</li>
+              <li><strong>Test each piece separately</strong> — is it the script? The scheduler? The connector?</li>
+              <li><strong>Ask in your community</strong> — someone's probably hit the same issue</li>
+            </ol>
+          </div>
+        </div>
 
       </div>
 
@@ -291,26 +564,32 @@ WAIT_SECONDS=8
     <aside class="toc">
       <p class="toc__title">Contents</p>
       <ul class="toc__list">
-        <li class="toc__item"><a href="#what-were-building" class="toc__link">What We're Building</a></li>
-        <li class="toc__item"><a href="#how-it-works" class="toc__link">How It Works</a></li>
+        <li class="toc__item"><a href="#what-this-is-for" class="toc__link">What This Guide Is For</a></li>
+        <li class="toc__item"><a href="#big-picture" class="toc__link">The Big Picture</a></li>
+        <li class="toc__item"><a href="#prerequisites" class="toc__link">Prerequisites</a></li>
         <li class="toc__item"><a href="#part-1" class="toc__link">Part 1: Connect to Notion</a></li>
-        <li class="toc__item"><a href="#enable-connector" class="toc__link toc__link--h3">Enable the Connector</a></li>
-        <li class="toc__item"><a href="#share-pages" class="toc__link toc__link--h3">Share Your Pages</a></li>
+        <li class="toc__item"><a href="#enable-connector" class="toc__link toc__link--h3">Enable Connector</a></li>
+        <li class="toc__item"><a href="#share-pages" class="toc__link toc__link--h3">Share Pages</a></li>
         <li class="toc__item"><a href="#test-connection" class="toc__link toc__link--h3">Test It</a></li>
-        <li class="toc__item"><a href="#part-2" class="toc__link">Part 2: Create a Skill</a></li>
-        <li class="toc__item"><a href="#skill-structure" class="toc__link toc__link--h3">Basic Structure</a></li>
-        <li class="toc__item"><a href="#upload-skill" class="toc__link toc__link--h3">Upload the Skill</a></li>
-        <li class="toc__item"><a href="#test-skill" class="toc__link toc__link--h3">Test It Manually</a></li>
-        <li class="toc__item"><a href="#part-3" class="toc__link">Part 3: The Wake Script</a></li>
+        <li class="toc__item"><a href="#part-2" class="toc__link">Part 2: Skill File</a></li>
+        <li class="toc__item"><a href="#write-skill" class="toc__link toc__link--h3">Write Your Skill</a></li>
+        <li class="toc__item"><a href="#upload-skill" class="toc__link toc__link--h3">Upload to Claude</a></li>
+        <li class="toc__item"><a href="#test-skill" class="toc__link toc__link--h3">Test Manually</a></li>
+        <li class="toc__item"><a href="#part-3" class="toc__link">Part 3: Wake Script</a></li>
         <li class="toc__item"><a href="#windows-script" class="toc__link toc__link--h3">Windows</a></li>
         <li class="toc__item"><a href="#mac-script" class="toc__link toc__link--h3">Mac</a></li>
         <li class="toc__item"><a href="#part-4" class="toc__link">Part 4: Schedule It</a></li>
         <li class="toc__item"><a href="#windows-scheduler" class="toc__link toc__link--h3">Windows Scheduler</a></li>
         <li class="toc__item"><a href="#mac-scheduler" class="toc__link toc__link--h3">Mac launchd</a></li>
         <li class="toc__item"><a href="#part-5" class="toc__link">Part 5: Make It Work</a></li>
+        <li class="toc__item"><a href="#checklist" class="toc__link toc__link--h3">Checklist</a></li>
         <li class="toc__item"><a href="#troubleshooting" class="toc__link toc__link--h3">Troubleshooting</a></li>
-        <li class="toc__item"><a href="#advanced" class="toc__link">Advanced: Multiple Skills</a></li>
-        <li class="toc__item"><a href="#you-did-it" class="toc__link">You Did It</a></li>
+        <li class="toc__item"><a href="#part-6" class="toc__link">Part 6: Advanced</a></li>
+        <li class="toc__item"><a href="#multiple-tasks" class="toc__link toc__link--h3">Multiple Tasks</a></li>
+        <li class="toc__item"><a href="#passing-context" class="toc__link toc__link--h3">Passing Context</a></li>
+        <li class="toc__item"><a href="#conditional-triggers" class="toc__link toc__link--h3">Conditional Triggers</a></li>
+        <li class="toc__item"><a href="#quick-reference" class="toc__link">Quick Reference</a></li>
+        <li class="toc__item"><a href="#you-did-it" class="toc__link">You Did It!</a></li>
       </ul>
     </aside>
 

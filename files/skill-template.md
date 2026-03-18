@@ -10,7 +10,7 @@
 # HOW TO USE THIS:
 # 1. Download or copy this file
 # 2. Customize it for your needs
-# 3. Upload it to Claude Desktop via Settings → Skills
+# 3. Upload it to Claude Desktop via Customize - Create new skills
 # 4. Trigger it with a message like "Execute the night-reflection skill."
 # ============================================================
 

@@ -84,13 +84,11 @@ If it works, you're ready for Part 2. If not, check that:
 
 # Part 2: Creating a Skill File
 
-A "skill" is a set of instructions that tells Claude what to do when triggered. Think of it as a recipe.
-
 **📎 SEPARATE FILE PROVIDED:** `skill-template.md`
 
 ## Step 2.1: Write Your Skill
 
-Download `skill-template.md` and customize it for your needs, OR write your own from scratch.
+Download `skill-template.md` and customize it for your needs, OR write your own from scratch. Or just ask you AI to write it, that is the easiest way!
 
 Your skill file should include:
 - **Name and description** (in the frontmatter)
@@ -99,13 +97,13 @@ Your skill file should include:
 - **Notion details** (the page ID where content should go)
 - **Rules** (any constraints or style guidelines)
 
-💡 **To find your Notion page ID:** Open the page in Notion, look at the URL — the long string of letters and numbers after the page title is the ID.
+💡 **To find your Notion page ID:** Open the page in Notion, look at the URL — the long string of letters and numbers after the page title is the ID. If you ask your AI to write the skill, they will know this automatically if you tell them where to write.
 
 ## Step 2.2: Upload Your Skill to Claude
 
 1. Open Claude Desktop
-2. Go to **Settings** (gear icon)
-3. Find **Skills** or **Custom Instructions**
+2. Go to **Customize** 
+3. Click **Create new skills**
 4. Upload your `.md` skill file
 5. Done — Claude can now use it!
 
@@ -115,7 +113,7 @@ Before scheduling anything, test the skill by hand:
 
 In a Claude conversation, type:
 ```
-Execute the night-reflection skill.
+Execute the night-reflection (or whatever name you gave the skill) skill.
 ```
 
 If Claude creates the expected Notion page, you're ready for Part 3.
