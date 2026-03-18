@@ -85,7 +85,18 @@ document.addEventListener('DOMContentLoaded', function() {
   // Simple Syntax Highlighting
   // ─────────────────────────────────────────────────────────────────────────
   document.querySelectorAll('.code-block code').forEach(function(block) {
+    // Skip markdown blocks - they don't need highlighting and it breaks them
+    if (block.classList.contains('language-markdown')) {
+      return;
+    }
+    
     let html = block.innerHTML;
+    
+    // Skip if content looks like it might have complex nested structures
+    // (YAML frontmatter, etc.) - these break with naive regex highlighting
+    if (html.includes('---\n') || html.includes('description:')) {
+      return;
+    }
     
     // Escape HTML first (already done in the HTML)
     // Then apply highlighting
@@ -98,7 +109,7 @@ document.addEventListener('DOMContentLoaded', function() {
     html = html.replace(/(\/\/[^\n<]*)/g, '<span class="hljs-comment">$1</span>');
     
     // Keywords
-    const keywords = ['def', 'class', 'import', 'from', 'return', 'if', 'else', 'elif', 'for', 'while', 'try', 'except', 'with', 'as', 'async', 'await', 'True', 'False', 'None', 'function', 'const', 'let', 'var', 'new', 'this'];
+    const keywords = ['def', 'import', 'from', 'return', 'if', 'else', 'elif', 'for', 'while', 'try', 'except', 'with', 'as', 'async', 'await', 'True', 'False', 'None', 'function', 'const', 'let', 'var', 'new', 'this'];
     keywords.forEach(function(kw) {
       const regex = new RegExp('\\b(' + kw + ')\\b', 'g');
       html = html.replace(regex, '<span class="hljs-keyword">$1</span>');
